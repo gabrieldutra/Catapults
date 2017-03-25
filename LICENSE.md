@@ -1,0 +1,1 @@
+"THE BEER-WARE LICENSE": Gabriel Dutra Dias(nesk.frz@gmail.com) and Bruno Nascimento Damascena (damacena.bruno@gmail.com) wrote this. As long as you retain this notice you can do whatever you want with this stuff. If we meet some day, and you think this stuff is worth it, you can buy us a beer in return.
