@@ -1,9 +1,16 @@
+CC=gcc
+OPCOES_COMPILADOR=-I. -lglut -lGLU -lGLEW -lGL -lSOIL
+TODOS_ARQUIVOS_PONTOH = model/catapulta.h model/props.h
+TODOS_ARQUIVOS_OBJ = catapults.o model/props.o model/catapulta.o
 
-catapults.out: catapults.o test.o
-	gcc catapults.o test.o -o catapults.out && rm *.o
+%.o: ../%.c $(TODOS_ARQUIVOS_PONTOH)
+	$(CC) -o $@ -c $< $(OPCOES_COMPILADOR)
 
-catapults.o: catapults.c
-	gcc -c catapults.c
+all: $(TODOS_ARQUIVOS_OBJ)
+	gcc -o catapults.out $^ $(OPCOES_COMPILADOR)
 
-test.o: model/test.c model/test.h
-	gcc -c model/test.c
+run: all
+	./catapults.out
+
+clean:
+	rm *.o model/*.o *.out
