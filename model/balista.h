@@ -1,12 +1,13 @@
 #include "props.h"
 
-#define CATAPULTA_TEMPO_RECARGA 500
+#define BALISTA_TEMPO_RECARGA 500
 
-typedef struct catapulta{
+typedef struct balista{
     Vetor posicao, velocidade, aceleracao;
     Dimensoes dimensoes;
     double inclinacao;
     int podeAtirar;
-} Catapulta;
+} Balista;
 
-Catapulta cataputa_criaCatapulta();
+Balista balista_criaBalista();
+void balista_desenhaBalista();
