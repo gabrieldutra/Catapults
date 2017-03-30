@@ -1,5 +1,5 @@
 CC=gcc
-OPCOES_COMPILADOR=-I. -lglut -lGLU -lGLEW -lGL -lSOIL
+OPCOES_COMPILADOR=-I. -lglut -lGLU -lGLEW -lGL -lSOIL -lm
 TODOS_ARQUIVOS_PONTOH = model/catapulta.h model/props.h
 TODOS_ARQUIVOS_OBJ = catapults.o model/props.o model/catapulta.o
 
