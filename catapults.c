@@ -3,11 +3,15 @@
 #include <SOIL/SOIL.h>
 #include <stdio.h>
 #include <math.h>
+#include "model/balista.h"
 
 GLfloat orientacaoEmGraus = 0;
 GLfloat velocidadeAngular = 0.05;
 GLfloat x = 0, y = 0;
 const GLfloat velocidadeTangencial = 0.5;
+
+// Objetos
+Balista balista;
 
 #define radianoParaGraus(radianos) (radianos * (180.0 / M_PI))
 #define grausParaRadianos(graus) ((graus * M_PI) / 180.0)
@@ -16,25 +20,7 @@ void desenhaCena(void)
 {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // Começa a usar a cor azul
-    glColor3f(.5, .5, 1);
-
-    glPushMatrix();
-        // Move o sistema de coordenadas para a posição onde deseja-se desenhar
-        glTranslatef(x, y, 0);
-        // Rotaciona o sistema de coordenadas para o ângulo de orientação,
-        // no eixo Z (como estamos em 2D, só faz sentido rotacionar em 'z')
-        // O ângulo esperado pela glRotate deve estar em graus
-        // Os argumentos "0, 0, 1" indicam que a rotação é no eixo Z
-        glRotatef(orientacaoEmGraus, 0, 0, 1);
-
-        // Desenha um triângulo na origem
-        glBegin(GL_TRIANGLES);
-            glVertex2f(-6, -3);
-            glVertex2f( 6,  0);
-            glVertex2f(-6,  3);
-        glEnd();
-    glPopMatrix();
+    balista_desenhaBalista(&balista);
 
     // Diz ao OpenGL para colocar o que desenhamos na tela
     glutSwapBuffers();
@@ -43,6 +29,7 @@ void desenhaCena(void)
 // Inicia algumas variáveis de estado
 void inicializa(void)
 {
+    balista = balista_criaBalista();
     // cor para limpar a tela
     glClearColor(0, 0, 0, 0);      // preto
 
