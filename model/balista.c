@@ -2,6 +2,7 @@
 #include <GL/freeglut.h>
 #include <SOIL/SOIL.h>
 #include <math.h>
+#include "props.h"
 #include "balista.h"
 
 /** Balista - Cria Balista com os valores iniciais
@@ -28,20 +29,10 @@ void balista_desenhaBalista(Balista *balista){
     // Começa a usar a cor azul
     glColor3f(.5, .5, 1);
 
-    glPushMatrix();
-        // Move o sistema de coordenadas para a posição onde deseja-se desenhar
-        glTranslatef(balista->posicao.x, balista->posicao.y, 0);
-        // Rotaciona o sistema de coordenadas para o ângulo de orientação,
-        // no eixo Z (como estamos em 2D, só faz sentido rotacionar em 'z')
-        // O ângulo esperado pela glRotate deve estar em graus
-        // Os argumentos "0, 0, 1" indicam que a rotação é no eixo Z
-        glRotatef(balista->inclinacao, 0, 0, 1);
-
-        // Desenha um triângulo na origem
-        glBegin(GL_TRIANGLES);
-            glVertex2f(-6, -3);
-            glVertex2f( 6,  0);
-            glVertex2f(-6,  3);
-        glEnd();
-    glPopMatrix();
+    // Desenha um triângulo
+    glBegin(GL_TRIANGLES);
+        glVertex2f(-16, -16);
+        glVertex2f( 16,  0);
+        glVertex2f(-16,  16);
+    glEnd();
 }

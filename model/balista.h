@@ -1,5 +1,3 @@
-#include "props.h"
-
 #define BALISTA_TEMPO_RECARGA 500 // Constante do tempo de recarga para a Balista (em ms)
 
 typedef struct balista{
