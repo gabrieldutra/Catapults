@@ -91,8 +91,9 @@ int main(int argc, char **argv)
     // Configuração inicial da janela do GLUT
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
-    glutInitWindowSize(500, 500);
-    glutInitWindowPosition(100, 100);
+    glutInitWindowSize(640, 480);
+    glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH)-640)/2,
+                       (glutGet(GLUT_SCREEN_HEIGHT)-480)/2);
 
     // Abre a janela
     glutCreateWindow("Triângulo em movimento e orientado");
