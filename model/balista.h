@@ -1,9 +1,10 @@
 #include "props.h"
 
-#define BALISTA_TEMPO_RECARGA 500
+#define BALISTA_TEMPO_RECARGA 500 // Constante do tempo de recarga para a Balista (em ms)
 
 typedef struct balista{
-    Vetor posicao, velocidade, aceleracao;
+    Vetor posicao;
+    double velocidade; // O módulo da velocidade, ela sempre fará vetor com a inclinação
     Dimensoes dimensoes;
     double inclinacao;
     int podeAtirar;
