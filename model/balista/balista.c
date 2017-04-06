@@ -2,7 +2,7 @@
 #include <GL/freeglut.h>
 #include <SOIL/SOIL.h>
 #include <math.h>
-#include "props.h"
+#include "../props/props.h"
 #include "balista.h"
 
 /** Balista - Cria Balista com os valores iniciais

@@ -3,9 +3,9 @@
 #include <SOIL/SOIL.h>
 #include <stdio.h>
 #include <math.h>
-#include "model/props.h"
-#include "model/mapa.h"
-#include "model/balista.h"
+#include "model/props/props.h"
+#include "model/mapa/mapa.h"
+#include "model/balista/balista.h"
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
