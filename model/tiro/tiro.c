@@ -1,0 +1,60 @@
+#include <GL/glew.h>
+#include <GL/freeglut.h>
+#include <SOIL/SOIL.h>
+#include <math.h>
+#include "../props/props.h"
+#include "tiro.h"
+
+/** Tiro - Construtor do Tiro
+* @param posicao Vetor da posicao inicial do tiro
+* @param velocidade a velocidade do tiro
+* @param inclinacao a inclinação do tiro
+* @return tiro com as variáveis criadas
+**/
+Tiro tiro_criaTiro(Vetor posicao, double velocidade, double inclinacao){
+    Tiro _novoTiro;
+    
+    Dimensoes _dimensoesTiro;
+    _dimensoesTiro.height = 16;
+    _dimensoesTiro.width = 32;
+
+    _novoTiro.posicao = posicao;
+    _novoTiro.dimensoes = _dimensoesTiro;
+    _novoTiro.velocidade = velocidade;
+    _novoTiro.inclinacao = inclinacao;
+    return _novoTiro;
+}
+
+/** Tiro - Desenha Tiro
+* @param tiro a ser desenhado
+**/
+void tiro_desenhaTiro(Tiro *tiro){
+    // Começa a usar a cor vermelha
+    glColor3f(1, .5, .5);
+
+    // Desenha um triângulo
+    glBegin(GL_TRIANGLES);
+        glVertex2f(-8, -8);
+        glVertex2f( 8,  0);
+        glVertex2f(-8,  8);
+    glEnd();
+}
+
+/** Tiro - Atualizar posicao
+* @param tiro que vai ter sua posição alterada
+* @param posicao a nova posição
+**/
+void tiro_atualizaPosicao(Tiro *tiro, Vetor posicao){
+    tiro->posicao = posicao;
+}
+
+/** Lista Tiro - Adiciona um tiro na lista
+* @param lista Lista que vai receber o elemento
+* @param tiro Tiro a ser adicionado
+**/
+ListaTiro *listatiro_adicionaTiro(ListaTiro *lista, Tiro tiro){
+    ListaTiro *_novaLista = (ListaTiro *) malloc(sizeof(ListaTiro));
+    _novaLista->tiro = tiro;
+    _novaLista->proximo = lista;
+    return _novaLista;
+}

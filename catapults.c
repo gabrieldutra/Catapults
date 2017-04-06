@@ -6,9 +6,10 @@
 #include "model/props/props.h"
 #include "model/mapa/mapa.h"
 #include "model/balista/balista.h"
+#include "model/tiro/tiro.h"
 
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 480
+#define WINDOW_WIDTH 800
+#define WINDOW_HEIGHT 600
 
 #define KEYBOARD_CONTROL 1
 #define MOUSE_CONTROL 0
@@ -19,6 +20,8 @@ int keyState[256];
 // Objetos
 Mapa mapa;
 Balista balista;
+ListaTiro *tiros = NULL;
+Tiro tiro;
 
 #define radianoParaGraus(radianos) (radianos * (180.0 / M_PI))
 #define grausParaRadianos(graus) ((graus * M_PI) / 180.0)
@@ -31,6 +34,15 @@ void desenhaCena(void)
         // Move o sistema de coordenadas para a posição onde deseja-se desenhar
         glTranslatef(-balista.posicao.x, -balista.posicao.y, 0);
         mapa_desenhaMapa(&mapa);
+        ListaTiro *_tiros = tiros;
+        while(_tiros != NULL){
+            glPushMatrix();
+                glTranslatef(_tiros->tiro.posicao.x, _tiros->tiro.posicao.y, 0); 
+                glRotatef(_tiros->tiro.inclinacao, 0, 0, 1);  
+                tiro_desenhaTiro(&(_tiros->tiro));    
+            glPopMatrix();
+            _tiros = _tiros->proximo;
+        }                 
     glPopMatrix();
 
     glPushMatrix();    
@@ -51,6 +63,7 @@ void inicializa(void)
     for(i=0;i<256;i++) keyState[i]=0;
     mapa = mapa_criaMapa();
     balista = balista_criaBalista();
+    tiro = tiro_criaTiro(balista.posicao, 5, balista.inclinacao);
     // cor para limpar a tela
     glClearColor(0, 0, 0, 0);      // preto
 }
@@ -81,11 +94,26 @@ void atualiza(int idx) {
 
     // O ângulo esperado pelas funções "cos" e "sin" da math.h devem
     // estar em radianos
+
+    // Movimento da Balista
     
     balista.posicao.x+=balista.velocidade*cos(grausParaRadianos(balista.inclinacao));
     balista.posicao.y+=balista.velocidade*sin(grausParaRadianos(balista.inclinacao));
     if(balista.velocidade > 0) balista.velocidade -=0.05;
     if(balista.velocidade < 0) balista.velocidade = 0;
+
+    // Movimento dos tiros
+    
+    ListaTiro *_tiros = tiros;
+    while(_tiros != NULL){
+        _tiros->tiro.posicao.x+=_tiros->tiro.velocidade*cos(grausParaRadianos(_tiros->tiro.inclinacao));
+        _tiros->tiro.posicao.y+=_tiros->tiro.velocidade*sin(grausParaRadianos(_tiros->tiro.inclinacao));
+        if(_tiros->tiro.velocidade > 0) _tiros->tiro.velocidade -=0.08;
+        if(_tiros->tiro.velocidade < 5) {
+            _tiros->tiro.posicao.x = 2000;
+        }
+        _tiros = _tiros->proximo;
+    }
 
     glutPostRedisplay();
     glutTimerFunc(17, atualiza, 0);
@@ -114,6 +142,7 @@ void movimentoMouse(int x, int y) {
 void teclado(unsigned char key, int x, int y)
 {
     keyState[key] = 1;
+    Tiro _novoTiro;
     switch(key)
     {
         // Tecla ESC
@@ -122,6 +151,13 @@ void teclado(unsigned char key, int x, int y)
             break;
         case 'c':
             controleDoJogo = !controleDoJogo; // inverte o controle do jogo
+            break;
+        case ' ':
+            _novoTiro = tiro_criaTiro(balista.posicao, 10, balista.inclinacao);
+            tiros = listatiro_adicionaTiro(tiros, _novoTiro);
+            // tiro_atualizaPosicao(&tiro, balista.posicao);
+            // tiro.inclinacao = balista.inclinacao;
+            // tiro.velocidade = 10;
             break;
         default:
             break;

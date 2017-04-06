@@ -1,7 +1,7 @@
 CC=gcc
 OPCOES_COMPILADOR=-I. -lglut -lGLU -lGLEW -lGL -lSOIL -lm
-TODOS_ARQUIVOS_PONTOH = model/props/props.h model/balista/balista.h model/mapa/mapa.h
-TODOS_ARQUIVOS_OBJ = catapults.o model/props/props.o model/mapa/mapa.o model/balista/balista.o
+TODOS_ARQUIVOS_PONTOH = model/props/props.h model/balista/balista.h model/mapa/mapa.h model/tiro/tiro.h
+TODOS_ARQUIVOS_OBJ = catapults.o model/props/props.o model/mapa/mapa.o model/balista/balista.o model/tiro/tiro.o
 
 %.o: ../%.c $(TODOS_ARQUIVOS_PONTOH)
 	$(CC) -o $@ -c $< $(OPCOES_COMPILADOR)
