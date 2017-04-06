@@ -7,6 +7,14 @@
 #include "model/mapa.h"
 #include "model/balista.h"
 
+#define WINDOW_WIDTH 640
+#define WINDOW_HEIGHT 480
+
+#define KEYBOARD_CONTROL 1
+#define MOUSE_CONTROL 0
+
+int controleDoJogo = MOUSE_CONTROL;
+
 GLfloat orientacaoEmGraus = 0;
 GLfloat velocidadeAngular = 0.05;
 GLfloat x = 0, y = 0;
@@ -15,6 +23,7 @@ const GLfloat velocidadeTangencial = 0.5;
 // Objetos
 Mapa mapa;
 Balista balista;
+
 
 #define radianoParaGraus(radianos) (radianos * (180.0 / M_PI))
 #define grausParaRadianos(graus) ((graus * M_PI) / 180.0)
@@ -60,7 +69,7 @@ void redimensiona(int w, int h)
    glViewport(0, 0, w, h);
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
-   glOrtho(-320, 320, -240, 240, -1, 1);
+   glOrtho(-(WINDOW_WIDTH/2), (WINDOW_WIDTH/2), -(WINDOW_HEIGHT/2), (WINDOW_HEIGHT/2), -1, 1);
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
 }
@@ -68,14 +77,36 @@ void redimensiona(int w, int h)
 void atualiza(int idx) {
     // O ângulo esperado pelas funções "cos" e "sin" da math.h devem
     // estar em radianos
-    GLfloat orientacaoEmRadianos = grausParaRadianos(orientacaoEmGraus);
-    x += cos(orientacaoEmRadianos) * velocidadeTangencial;
-    y += sin(orientacaoEmRadianos) * velocidadeTangencial;
+    
+    balista.posicao.x+=balista.velocidade*cos(grausParaRadianos(balista.inclinacao));
+    balista.posicao.y+=balista.velocidade*sin(grausParaRadianos(balista.inclinacao));
+
+    if(balista.velocidade > 0) balista.velocidade -=0.1;
+    if(balista.velocidade < 0) balista.velocidade = 0;
 
     orientacaoEmGraus += velocidadeAngular;
 
     glutPostRedisplay();
     glutTimerFunc(17, atualiza, 0);
+}
+
+// Callback de movimento do mouse
+void movimentoMouse(int x, int y) {
+    /* Ponto central da tela: ((WINDOW_WIDTH/2), (WINDOW_HEIGHT/2))
+       Ponto do mouse na tela:  (x, y)
+       Vetor direção da balista: Ponto do mouse - Ponto central
+       Ângulo da nave: ângulo entre o vetor direção e o vetor i
+    */
+    Vetor _vetorDirecao;
+    _vetorDirecao.x = x-(WINDOW_WIDTH/2);
+    _vetorDirecao.y = -1*(y-(WINDOW_HEIGHT/2)); // -1 para inverter o sentido de crescimento
+    
+    Vetor _i;
+    _i.x = 1;
+    _i.y = 0;
+    
+    // Define a inclinação da balista
+    if(controleDoJogo == MOUSE_CONTROL) balista.inclinacao = vetor_calculaAngulo(_vetorDirecao,_i);
 }
 
 // Callback de evento de teclado
@@ -88,24 +119,28 @@ void teclado(unsigned char key, int x, int y)
             exit(0);
             break;
         case 'w':
-            balista.posicao.y+=5;
+            if(balista.velocidade < 5) balista.velocidade+=1;
             break;
         case 's':
-            balista.posicao.y-=5;
+            if(balista.velocidade > 0) balista.velocidade-=1;
+            if(balista.velocidade < 0) balista.velocidade = 0;
             break;
         case 'a':
-            balista.posicao.x-=5;
+            if(controleDoJogo == KEYBOARD_CONTROL) balista.inclinacao+=10;
             break;
         case 'd':
-            balista.posicao.x+=5;
+            if(controleDoJogo == KEYBOARD_CONTROL) balista.inclinacao-=10;
+            break;
+        case 'c':
+            controleDoJogo = !controleDoJogo; // inverte o controle do jogo
             break;
         case '+':
         case '=':
-            velocidadeAngular += 0.5;
+            velocidadeAngular += 1;
             break;
         case '-':
         case '_':
-            velocidadeAngular -= 0.5;
+            velocidadeAngular -= 1;
             break;
         default:
             break;
@@ -118,9 +153,9 @@ int main(int argc, char **argv)
     // Configuração inicial da janela do GLUT
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
-    glutInitWindowSize(640, 480);
-    glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH)-640)/2,
-                       (glutGet(GLUT_SCREEN_HEIGHT)-480)/2);
+    glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+    glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH)-WINDOW_WIDTH)/2,
+                       (glutGet(GLUT_SCREEN_HEIGHT)-WINDOW_HEIGHT)/2);
 
     // Abre a janela
     glutCreateWindow("Catapults - Medieval war where you actually control a Ballista");
@@ -128,6 +163,7 @@ int main(int argc, char **argv)
     // Registra callbacks para alguns eventos
     glutDisplayFunc(desenhaCena);
     glutReshapeFunc(redimensiona);
+    glutPassiveMotionFunc(movimentoMouse);
     glutKeyboardFunc(teclado);
     glutTimerFunc(0, atualiza, 0);
     inicializa();
