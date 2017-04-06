@@ -9,12 +9,12 @@
 * @return Mapa com valores iniciais
 **/
 Mapa mapa_criaMapa(){
-    Mapa _novo;
+    Mapa _novoMapa;
 
-    _novo.dimensoes.width = 640;
-    _novo.dimensoes.height = 480;
+    _novoMapa.dimensoes.width = 640;
+    _novoMapa.dimensoes.height = 480;
 
-    return _novo;
+    return _novoMapa;
 }
 
 /** Mapa - Desenha Mapa

@@ -9,17 +9,17 @@
 * @return Balista com valores iniciais
 **/
 Balista balista_criaBalista(){
-    Balista _nova;
+    Balista _novaBalista;
 
-    _nova.dimensoes.width = 32;
-    _nova.dimensoes.height = 32;
-    _nova.posicao.x = 0;
-    _nova.posicao.y = 0;
-    _nova.velocidade = 0;
-    _nova.inclinacao = 0;
-    _nova.podeAtirar = BALISTA_TEMPO_RECARGA;
+    _novaBalista.dimensoes.width = 32;
+    _novaBalista.dimensoes.height = 32;
+    _novaBalista.posicao.x = 0;
+    _novaBalista.posicao.y = 0;
+    _novaBalista.velocidade = 0;
+    _novaBalista.inclinacao = 0;
+    _novaBalista.podeAtirar = BALISTA_TEMPO_RECARGA;
 
-    return _nova;
+    return _novaBalista;
 }
 
 /** Balista - Desenha Balista
