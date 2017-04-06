@@ -14,16 +14,11 @@
 #define MOUSE_CONTROL 0
 
 int controleDoJogo = MOUSE_CONTROL;
-
-GLfloat orientacaoEmGraus = 0;
-GLfloat velocidadeAngular = 0.05;
-GLfloat x = 0, y = 0;
-const GLfloat velocidadeTangencial = 0.5;
+int keyState[256];
 
 // Objetos
 Mapa mapa;
 Balista balista;
-
 
 #define radianoParaGraus(radianos) (radianos * (180.0 / M_PI))
 #define grausParaRadianos(graus) ((graus * M_PI) / 180.0)
@@ -52,15 +47,12 @@ void desenhaCena(void)
 // Inicia algumas variáveis de estado
 void inicializa(void)
 {
+    int i;
+    for(i=0;i<256;i++) keyState[i]=0;
     mapa = mapa_criaMapa();
     balista = balista_criaBalista();
     // cor para limpar a tela
     glClearColor(0, 0, 0, 0);      // preto
-
-    // imprime instruções
-    printf("Instrucoes:\n");
-    printf("\t+: gira no sentido horario\n");
-    printf("\t-: gira no sentido anti-horario\n\n");
 }
 
 // Callback de redimensionamento
@@ -75,16 +67,25 @@ void redimensiona(int w, int h)
 }
 
 void atualiza(int idx) {
+    // Verificações de teclas
+    if(keyState['w'] && balista.velocidade < 5) balista.velocidade+=0.2;
+    
+    if(keyState['s'] && balista.velocidade < 5) {
+        if(balista.velocidade > 0) balista.velocidade -= 0.2;
+    }
+
+    if(keyState['a'] && controleDoJogo == KEYBOARD_CONTROL) balista.inclinacao+=5;
+
+    if(keyState['d'] && controleDoJogo == KEYBOARD_CONTROL) balista.inclinacao-=5;
+
+
     // O ângulo esperado pelas funções "cos" e "sin" da math.h devem
     // estar em radianos
     
     balista.posicao.x+=balista.velocidade*cos(grausParaRadianos(balista.inclinacao));
     balista.posicao.y+=balista.velocidade*sin(grausParaRadianos(balista.inclinacao));
-
-    if(balista.velocidade > 0) balista.velocidade -=0.1;
+    if(balista.velocidade > 0) balista.velocidade -=0.05;
     if(balista.velocidade < 0) balista.velocidade = 0;
-
-    orientacaoEmGraus += velocidadeAngular;
 
     glutPostRedisplay();
     glutTimerFunc(17, atualiza, 0);
@@ -112,41 +113,26 @@ void movimentoMouse(int x, int y) {
 // Callback de evento de teclado
 void teclado(unsigned char key, int x, int y)
 {
+    keyState[key] = 1;
     switch(key)
     {
         // Tecla ESC
         case 27:
             exit(0);
             break;
-        case 'w':
-            if(balista.velocidade < 5) balista.velocidade+=1;
-            break;
-        case 's':
-            if(balista.velocidade > 0) balista.velocidade-=1;
-            if(balista.velocidade < 0) balista.velocidade = 0;
-            break;
-        case 'a':
-            if(controleDoJogo == KEYBOARD_CONTROL) balista.inclinacao+=10;
-            break;
-        case 'd':
-            if(controleDoJogo == KEYBOARD_CONTROL) balista.inclinacao-=10;
-            break;
         case 'c':
             controleDoJogo = !controleDoJogo; // inverte o controle do jogo
-            break;
-        case '+':
-        case '=':
-            velocidadeAngular += 1;
-            break;
-        case '-':
-        case '_':
-            velocidadeAngular -= 1;
             break;
         default:
             break;
     }
 }
 
+// Callback de evento de teclado liberado
+void tecladoUp(unsigned char key, int x, int y)
+{
+    keyState[key] = 0;
+}
 // Rotina principal
 int main(int argc, char **argv)
 {
@@ -165,6 +151,7 @@ int main(int argc, char **argv)
     glutReshapeFunc(redimensiona);
     glutPassiveMotionFunc(movimentoMouse);
     glutKeyboardFunc(teclado);
+    glutKeyboardUpFunc(tecladoUp);
     glutTimerFunc(0, atualiza, 0);
     inicializa();
 
