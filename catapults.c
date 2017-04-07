@@ -8,8 +8,8 @@
 #include "model/balista/balista.h"
 #include "model/tiro/tiro.h"
 
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 600
+int windowWidth = 800;
+int windowHeight = 600;
 
 #define KEYBOARD_CONTROL 1
 #define MOUSE_CONTROL 0
@@ -71,10 +71,12 @@ void inicializa(void)
 // Callback de redimensionamento
 void redimensiona(int w, int h)
 {
+   windowWidth = w;
+   windowHeight = h;
    glViewport(0, 0, w, h);
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
-   glOrtho(-(WINDOW_WIDTH/2), (WINDOW_WIDTH/2), -(WINDOW_HEIGHT/2), (WINDOW_HEIGHT/2), -1, 1);
+   glOrtho(-(w/2), (w/2), -(h/2), (h/2), -1, 1);
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
 }
@@ -123,14 +125,14 @@ void atualiza(int idx) {
 
 // Callback de movimento do mouse
 void movimentoMouse(int x, int y) {
-    /* Ponto central da tela: ((WINDOW_WIDTH/2), (WINDOW_HEIGHT/2))
+    /* Ponto central da tela: ((windowWidth/2), (windowHeight/2))
        Ponto do mouse na tela:  (x, y)
        Vetor direção da balista: Ponto do mouse - Ponto central
        Ângulo da nave: ângulo entre o vetor direção e o vetor i
     */
     Vetor _vetorDirecao;
-    _vetorDirecao.x = x-(WINDOW_WIDTH/2);
-    _vetorDirecao.y = -1*(y-(WINDOW_HEIGHT/2)); // -1 para inverter o sentido de crescimento
+    _vetorDirecao.x = x-(windowWidth/2);
+    _vetorDirecao.y = -1*(y-(windowHeight/2)); // -1 para inverter o sentido de crescimento
     
     Vetor _i;
     _i.x = 1;
@@ -180,9 +182,9 @@ int main(int argc, char **argv)
     // Configuração inicial da janela do GLUT
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
-    glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-    glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH)-WINDOW_WIDTH)/2,
-                       (glutGet(GLUT_SCREEN_HEIGHT)-WINDOW_HEIGHT)/2);
+    glutInitWindowSize(windowWidth, windowHeight);
+    glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH)-windowWidth)/2,
+                       (glutGet(GLUT_SCREEN_HEIGHT)-windowHeight)/2);
 
     // Abre a janela
     glutCreateWindow("Catapults - Medieval war where you actually control a Ballista");
