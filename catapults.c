@@ -32,8 +32,20 @@ void desenhaCena(void)
 
     glPushMatrix();
         // Move o sistema de coordenadas para a posição onde deseja-se desenhar
+        glTranslatef(-fmod(balista.posicao.x, mapa.dimensoes.width), -fmod(balista.posicao.y, mapa.dimensoes.height), 0);
+        int i,j;
+        for(i=-3; i<=3; i++){
+            for(j=-3; j<=3; j++){
+                glPushMatrix();
+                    glTranslatef(i*mapa.dimensoes.width,j*mapa.dimensoes.height,0);
+                    mapa_desenhaMapa(&mapa);
+                glPopMatrix();
+            }
+        }
+    glPopMatrix();
+
+    glPushMatrix();
         glTranslatef(-balista.posicao.x, -balista.posicao.y, 0);
-        mapa_desenhaMapa(&mapa);
         ListaTiro *_tiros = tiros;
         while(_tiros != NULL){
             glPushMatrix();
@@ -162,9 +174,6 @@ void teclado(unsigned char key, int x, int y)
                 tiros = listatiro_adicionaTiro(tiros, _novoTiro);
                 balista.podeAtirar = 0;
             }
-            // tiro_atualizaPosicao(&tiro, balista.posicao);
-            // tiro.inclinacao = balista.inclinacao;
-            // tiro.velocidade = 10;
             break;
         default:
             break;
