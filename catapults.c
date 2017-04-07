@@ -31,7 +31,11 @@ void desenhaCena(void)
     glClear(GL_COLOR_BUFFER_BIT);
 
     glPushMatrix();
-        // Move o sistema de coordenadas para a posição onde deseja-se desenhar
+        /* Move o sistema de coordenadas para a posição onde deseja-se desenhar
+        *  Desenha o mapa a partir da posição -BalistaX módulo com mapaWidth e -BalistaY módulo com mapaHeight
+        *  Desse jeito, o mapa repete facilmente, pois na tela a posição só varia entre (0 ~ mapaWidth, 0 ~ mapaHeight)
+        *  Varia exatamente a quantidade que o usuário andou em relação àquele ponto
+        */
         glTranslatef(-fmod(balista.posicao.x, mapa.dimensoes.width), -fmod(balista.posicao.y, mapa.dimensoes.height), 0);
         int i,j;
         for(i=-3; i<=3; i++){
