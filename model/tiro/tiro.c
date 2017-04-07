@@ -48,7 +48,7 @@ void tiro_atualizaPosicao(Tiro *tiro, Vetor posicao){
     tiro->posicao = posicao;
 }
 
-/** Lista Tiro - Adiciona um tiro na lista
+/** Lista Tiro - Adicionar um tiro na lista
 * @param lista Lista que vai receber o elemento
 * @param tiro Tiro a ser adicionado
 **/
@@ -57,4 +57,24 @@ ListaTiro *listatiro_adicionaTiro(ListaTiro *lista, Tiro tiro){
     _novaLista->tiro = tiro;
     _novaLista->proximo = lista;
     return _novaLista;
+}
+
+/** Lista Tiro - Deletar um tiro da lista lista
+* @param lista Lista que vai ter o elemento removido
+* @param tiro Tiro a ser deletado
+**/
+ListaTiro *listatiro_deletaTiro(ListaTiro *lista, Tiro *tiro){
+    // Percorre a lista até achar o elemento
+    ListaTiro *_elementoAnterior = NULL;
+    ListaTiro *_primeiroElemento = lista; // Salva o primeiro elemento
+    while(lista != NULL){
+        if(&lista->tiro == tiro){
+            if(_elementoAnterior == NULL) return lista->proximo; // Caso o anterior seja NULL apenas retorna
+            _elementoAnterior->proximo = lista->proximo; // Pula o elemento atual e retorna a posição inicial da lista
+            return _primeiroElemento;
+        }    
+        _elementoAnterior = lista;
+        lista = lista->proximo;
+    }
+    return _primeiroElemento; // Caso não tenha encontrado nada só retorna o primeiro elemento
 }

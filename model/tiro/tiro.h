@@ -15,4 +15,4 @@ void tiro_desenhaTiro(Tiro *tiro);
 void tiro_atualizaPosicao(Tiro *tiro, Vetor posicao);
 
 ListaTiro *listatiro_adicionaTiro(ListaTiro *lista, Tiro tiro);
-ListaTiro *listatiro_deletaTiro(ListaTiro *lista, Tiro tiro);
+ListaTiro *listatiro_deletaTiro(ListaTiro *lista, Tiro *tiro);

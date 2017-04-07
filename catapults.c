@@ -110,7 +110,7 @@ void atualiza(int idx) {
         _tiros->tiro.posicao.y+=_tiros->tiro.velocidade*sin(grausParaRadianos(_tiros->tiro.inclinacao));
         if(_tiros->tiro.velocidade > 0) _tiros->tiro.velocidade -=0.08;
         if(_tiros->tiro.velocidade < 5) {
-            _tiros->tiro.posicao.x = 2000;
+            tiros = listatiro_deletaTiro(tiros, &(_tiros->tiro));
         }
         _tiros = _tiros->proximo;
     }
