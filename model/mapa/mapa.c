@@ -34,6 +34,10 @@ void mapa_desenhaMapa(Mapa *mapa){
     glColor3f(1, 1, 1);
     glEnable(GL_TEXTURE_2D);
 
+    // WRAP para resolver linhas pretas entre as texturas
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
     // Desenha o mapa
     glBindTexture(GL_TEXTURE_2D, mapa->textura);
     glBegin(GL_TRIANGLE_FAN);
