@@ -1,4 +1,4 @@
-#define BALISTA_TEMPO_RECARGA 500 // Constante do tempo de recarga para a Balista (em ms)
+#define BALISTA_TEMPO_RECARGA 30 // Constante do tempo de recarga para a Balista (em ms)
 
 typedef struct balista{
     Vetor posicao;

@@ -27,7 +27,7 @@ Balista balista_criaBalista(){
 **/
 void balista_desenhaBalista(Balista *balista){
     // Começa a usar a cor azul
-    glColor3f(.5, .5, 1);
+    glColor3f(1 - ((float) balista->podeAtirar/BALISTA_TEMPO_RECARGA)/2, .5, .5+ ((float) balista->podeAtirar/BALISTA_TEMPO_RECARGA)/2);
 
     // Desenha um triângulo
     glBegin(GL_TRIANGLES);

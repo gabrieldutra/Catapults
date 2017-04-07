@@ -102,6 +102,8 @@ void atualiza(int idx) {
     if(balista.velocidade > 0) balista.velocidade -=0.05;
     if(balista.velocidade < 0) balista.velocidade = 0;
 
+    if(balista.podeAtirar < BALISTA_TEMPO_RECARGA) balista.podeAtirar++;
+
     // Movimento dos tiros
     
     ListaTiro *_tiros = tiros;
@@ -153,8 +155,11 @@ void teclado(unsigned char key, int x, int y)
             controleDoJogo = !controleDoJogo; // inverte o controle do jogo
             break;
         case ' ':
-            _novoTiro = tiro_criaTiro(balista.posicao, 10, balista.inclinacao);
-            tiros = listatiro_adicionaTiro(tiros, _novoTiro);
+            if(balista.podeAtirar == BALISTA_TEMPO_RECARGA){
+                _novoTiro = tiro_criaTiro(balista.posicao, 10, balista.inclinacao);
+                tiros = listatiro_adicionaTiro(tiros, _novoTiro);
+                balista.podeAtirar = 0;
+            }
             // tiro_atualizaPosicao(&tiro, balista.posicao);
             // tiro.inclinacao = balista.inclinacao;
             // tiro.velocidade = 10;
