@@ -59,7 +59,7 @@ ListaTiro *listatiro_adicionaTiro(ListaTiro *lista, Tiro tiro){
     return _novaLista;
 }
 
-/** Lista Tiro - Deletar um tiro da lista lista
+/** Lista Tiro - Deletar um tiro da lista
 * @param lista Lista que vai ter o elemento removido
 * @param tiro Tiro a ser deletado
 **/
