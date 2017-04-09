@@ -5,6 +5,26 @@
 #include "../props/props.h"
 #include "asteroide.h"
 
+/** Asteroide - Construtor do Asteroide
+* @param posicao Vetor da posicao inicial do asteroide
+* @param velocidade a velocidade do Asteroide
+* @param inclinacao a inclinação do asteroide
+* @return Asteroide com as variáveis criadas
+**/
+Asteroide asteroide_criaAsteroide(Vetor posicao, double velocidade, double inclinacao){
+    Asteroide _novoAsteroide;
+    
+    Dimensoes _dimensoesAsteroide;
+    _dimensoesAsteroide.height = 32;
+    _dimensoesAsteroide.width = 32;
+
+    _novoAsteroide.posicao = posicao;
+    _novoAsteroide.dimensoes = _dimensoesAsteroide;
+    _novoAsteroide.velocidade = velocidade;
+    _novoAsteroide.inclinacao = inclinacao;
+    return _novoAsteroide;
+}
+
 /** Lista Asteroide - Adicionar um asteroide na lista
 * @param lista Lista que vai receber o elemento
 * @param asteroide Asteroide a ser adicionado
