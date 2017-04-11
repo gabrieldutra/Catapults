@@ -30,14 +30,22 @@ void barra_desenhaBarra(Barra *barra){
 
     // Desenha a parte preta da barra
     glBegin(GL_TRIANGLE_FAN);
-        glVertex2f(-barra->dimensoes.width, -barra->dimensoes.height);
-        glVertex2f( -barra->dimensoes.width,  barra->dimensoes.height);
-        glVertex2f(barra->dimensoes.width,  barra->dimensoes.height);
-        glVertex2f(barra->dimensoes.width,  -barra->dimensoes.height);
+        glVertex2f(-(barra->dimensoes.width/2), -(barra->dimensoes.height/2));
+        glVertex2f( -(barra->dimensoes.width/2),  (barra->dimensoes.height/2));
+        glVertex2f((barra->dimensoes.width/2),  (barra->dimensoes.height/2));
+        glVertex2f((barra->dimensoes.width/2),  -(barra->dimensoes.height/2));
     glEnd();
 
     // Começa a usar a cor da barra com a tonalidade de acordo com o valor
     glColor3f((barra->corR/2)+(barra->corR/2)*(barra->valor/100),
     (barra->corB/2)+(barra->corG/2)*(barra->valor/100),
     (barra->corB/2)+(barra->corB/2)*(barra->valor/100));
+
+    // Desenha interna da barra
+    glBegin(GL_TRIANGLE_FAN);
+        glVertex2f(-((barra->dimensoes.width/2)-1), -((barra->dimensoes.height/2)-1));
+        glVertex2f(-((barra->dimensoes.width/2)-1),  ((barra->dimensoes.height/2)-1));
+        glVertex2f(-((barra->dimensoes.width/2)-1) + ((barra->dimensoes.width)-2)*(barra->valor/100),  ((barra->dimensoes.height/2)-1));
+        glVertex2f(-((barra->dimensoes.width/2)-1) + ((barra->dimensoes.width)-2)*(barra->valor/100),  -((barra->dimensoes.height/2)-1));
+    glEnd();
 }

@@ -15,8 +15,8 @@ Tiro tiro_criaTiro(Vetor posicao, double velocidade, double inclinacao){
     Tiro _novoTiro;
 
     Dimensoes _dimensoesTiro;
-    _dimensoesTiro.height = 2;
-    _dimensoesTiro.width = 8;
+    _dimensoesTiro.height = 4;
+    _dimensoesTiro.width = 16;
 
     _novoTiro.posicao = posicao;
     _novoTiro.dimensoes = _dimensoesTiro;
@@ -32,12 +32,12 @@ void tiro_desenhaTiro(Tiro *tiro){
     // Começa a usar a cor vermelha
     glColor3f(1, .5, .5);
 
-    // Desenha um triângulo
+    // Desenha o tiro
     glBegin(GL_TRIANGLE_FAN);
-        glVertex2f(-tiro->dimensoes.width, -tiro->dimensoes.height);
-        glVertex2f( -tiro->dimensoes.width,  tiro->dimensoes.height);
-        glVertex2f(tiro->dimensoes.width,  tiro->dimensoes.height);
-        glVertex2f(tiro->dimensoes.width,  -tiro->dimensoes.height);
+        glVertex2f(-(tiro->dimensoes.width/2), -(tiro->dimensoes.height/2));
+        glVertex2f(-(tiro->dimensoes.width/2),  (tiro->dimensoes.height/2));
+        glVertex2f((tiro->dimensoes.width/2),  (tiro->dimensoes.height/2));
+        glVertex2f((tiro->dimensoes.width/2),  -(tiro->dimensoes.height/2));
     glEnd();
 }
 

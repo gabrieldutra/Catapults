@@ -9,6 +9,7 @@
 #include "model/balista/balista.h"
 #include "model/tiro/tiro.h"
 #include "model/asteroide/asteroide.h"
+#include "model/barra/barra.h"
 
 int windowWidth = 800;
 int windowHeight = 600;
@@ -26,6 +27,9 @@ Mapa mapa;
 Balista balista;
 ListaTiro *tiros = NULL;
 ListaAsteroide *asteroides = NULL;
+
+// Barras do HUD
+Barra barraTiro;
 
 #define radianoParaGraus(radianos) (radianos * (180.0 / M_PI))
 #define grausParaRadianos(graus) ((graus * M_PI) / 180.0)
@@ -87,6 +91,19 @@ void desenhaCena(void)
         glEnd();
     glPopMatrix();
 
+    // HUD
+
+    glPushMatrix();
+        glTranslatef(-(windowWidth/2), (windowHeight/2), 0);
+        // Barra do tiro
+        glPushMatrix();
+            glTranslatef(barraTiro.posicao.x, -barraTiro.posicao.y, 0);
+            barra_desenhaBarra(&barraTiro);
+        glPopMatrix();
+
+    glPopMatrix();
+
+
     // Diz ao OpenGL para colocar o que desenhamos na tela
     glutSwapBuffers();
 }
@@ -98,6 +115,17 @@ void inicializa(void)
     for(i=0;i<256;i++) keyState[i]=0;
     mapa = mapa_criaMapa();
     balista = balista_criaBalista();
+
+    Vetor _posicaoBarraTiro;
+    _posicaoBarraTiro.x = 100;
+    _posicaoBarraTiro.y = 40;
+
+    Dimensoes _dimensoesBarraTiro;
+    _dimensoesBarraTiro.width = 140;
+    _dimensoesBarraTiro.height = 30;
+
+    barraTiro = barra_criaBarra(_posicaoBarraTiro, _dimensoesBarraTiro, 100, 1, .5, 0);
+
     // cor para limpar a tela
     glClearColor(0, 0, 0, 0);      // preto
 }
@@ -139,6 +167,7 @@ void atualiza(int idx) {
     if(balista.velocidade < 0) balista.velocidade = 0;
 
     if(balista.podeAtirar < BALISTA_TEMPO_RECARGA) balista.podeAtirar++;
+    barraTiro.valor = (float) (balista.podeAtirar*100)/BALISTA_TEMPO_RECARGA;
 
     // Movimento dos tiros
 
