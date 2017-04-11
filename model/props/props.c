@@ -32,7 +32,16 @@ double vetor_produtoEscalar(Vetor v1, Vetor v2){
 * @param v Vetor a ser normalizado
 **/
 void vetor_normalizaVetor(Vetor *v){
-    double _moduloVetor = sqrt(pow(v->x,2)+pow(v->y,2));
+    double _moduloVetor = vetor_calculaModulo(*v);
     v->x = v->x/_moduloVetor;
     v->y = v->y/_moduloVetor;
+}
+
+/** Vetor - Calcula módulo
+* @param v Vetor a ter módulo calculado
+* @return o módulo de v
+**/
+double vetor_calculaModulo(Vetor v){
+    double _moduloVetor = sqrt(pow(v.x,2)+pow(v.y,2));
+    return _moduloVetor;
 }

@@ -3,16 +3,20 @@
 #include <SOIL/SOIL.h>
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 #include "model/props/props.h"
 #include "model/mapa/mapa.h"
 #include "model/balista/balista.h"
 #include "model/tiro/tiro.h"
+#include "model/asteroide/asteroide.h"
 
 int windowWidth = 800;
 int windowHeight = 600;
 
 #define KEYBOARD_CONTROL 1
 #define MOUSE_CONTROL 0
+#define GAME_RADIUS 1000
+#define NUMERO_ASTEROIDES 50
 
 int controleDoJogo = MOUSE_CONTROL;
 int keyState[256];
@@ -21,7 +25,7 @@ int keyState[256];
 Mapa mapa;
 Balista balista;
 ListaTiro *tiros = NULL;
-Tiro tiro;
+ListaAsteroide *asteroides = NULL;
 
 #define radianoParaGraus(radianos) (radianos * (180.0 / M_PI))
 #define grausParaRadianos(graus) ((graus * M_PI) / 180.0)
@@ -48,6 +52,7 @@ void desenhaCena(void)
         }
     glPopMatrix();
 
+    // Desenha tiros
     glPushMatrix();
         glTranslatef(-balista.posicao.x, -balista.posicao.y, 0);
         ListaTiro *_tiros = tiros;
@@ -58,6 +63,20 @@ void desenhaCena(void)
                 tiro_desenhaTiro(&(_tiros->tiro));    
             glPopMatrix();
             _tiros = _tiros->proximo;
+        }                 
+    glPopMatrix();
+
+    // Desenha Asteróides
+    glPushMatrix();
+        glTranslatef(-balista.posicao.x, -balista.posicao.y, 0);
+        ListaAsteroide *_asteroides = asteroides;
+        while(_asteroides != NULL){
+            glPushMatrix();
+                glTranslatef(_asteroides->asteroide.posicao.x, _asteroides->asteroide.posicao.y, 0); 
+                glRotatef(_asteroides->asteroide.inclinacao, 0, 0, 1);  
+                asteroide_desenhaAsteroide(&(_asteroides->asteroide));    
+            glPopMatrix();
+            _asteroides = _asteroides->proximo;
         }                 
     glPopMatrix();
 
@@ -79,7 +98,6 @@ void inicializa(void)
     for(i=0;i<256;i++) keyState[i]=0;
     mapa = mapa_criaMapa();
     balista = balista_criaBalista();
-    tiro = tiro_criaTiro(balista.posicao, 5, balista.inclinacao);
     // cor para limpar a tela
     glClearColor(0, 0, 0, 0);      // preto
 }
@@ -133,6 +151,55 @@ void atualiza(int idx) {
             tiros = listatiro_deletaTiro(tiros, &(_tiros->tiro));
         }
         _tiros = _tiros->proximo;
+    }
+
+    // Gerenciamento dos asteróides
+    
+    // Deleta os asteróides distantes
+    ListaAsteroide *_asteroides = asteroides;
+    while(_asteroides != NULL){
+        Vetor _asteroideBalista; // Vetor do asteróide até a balista 
+        _asteroideBalista.x = balista.posicao.x-_asteroides->asteroide.posicao.x;
+        _asteroideBalista.y = balista.posicao.y-_asteroides->asteroide.posicao.y;
+
+        if(vetor_calculaModulo(_asteroideBalista) > GAME_RADIUS+10){
+            asteroides = listaasteroide_deletaAsteroide(asteroides, &(_asteroides->asteroide));
+        }
+        _asteroides = _asteroides->proximo;
+    }
+
+    // Verifica se o número de asteróides no mapa é menor do que o definido
+    if(listaasteroide_contaAsteroides(asteroides) < NUMERO_ASTEROIDES){
+        // Cria um asteróide no raio do jogo
+        double _anguloNoRaioDoJogo = rand()%360; // o asteróide vem de algum ponto no raio do jogo
+
+        Vetor _posicaoAsteroide;
+        _posicaoAsteroide.x = balista.posicao.x+(GAME_RADIUS*cos(grausParaRadianos(_anguloNoRaioDoJogo))); 
+        _posicaoAsteroide.y = balista.posicao.y+(GAME_RADIUS*sin(grausParaRadianos(_anguloNoRaioDoJogo)));
+
+        Vetor _direcaoAsteroide; // O asteróide começa em direção à balista 
+        _direcaoAsteroide.x = balista.posicao.x-_posicaoAsteroide.x;
+        _direcaoAsteroide.y = balista.posicao.y-_posicaoAsteroide.y;
+
+        Vetor _i;
+        _i.x = 1;
+        _i.y = 0;
+
+        double _anguloAsteroide = vetor_calculaAngulo(_direcaoAsteroide, _i); // O ângulo do asteróide é de 0 a 360
+
+        // A velocidade dos asteróides varia entre ASTEROIDE_VELOCIDADE_MINIMA e ASTEROIDE_VELOCIDADE_MAXIMA
+        double _velocidadeAsteroide = ASTEROIDE_VELOCIDADE_MINIMA + (float)( rand()%(ASTEROIDE_VELOCIDADE_MAXIMA-ASTEROIDE_VELOCIDADE_MINIMA+1)*100)/100;
+
+        Asteroide _novoAsteroide = asteroide_criaAsteroide(_posicaoAsteroide, _velocidadeAsteroide, _anguloAsteroide);
+        asteroides = listaasteroide_adicionaAsteroide(asteroides, _novoAsteroide);
+    }
+
+    // Movimento dos asteroides
+    _asteroides = asteroides;
+    while(_asteroides != NULL){
+        _asteroides->asteroide.posicao.x+=_asteroides->asteroide.velocidade*cos(grausParaRadianos(_asteroides->asteroide.inclinacao));
+        _asteroides->asteroide.posicao.y+=_asteroides->asteroide.velocidade*sin(grausParaRadianos(_asteroides->asteroide.inclinacao));
+        _asteroides = _asteroides->proximo;
     }
 
     glutPostRedisplay();
@@ -192,6 +259,7 @@ void tecladoUp(unsigned char key, int x, int y)
 // Rotina principal
 int main(int argc, char **argv)
 {
+    srand(time(NULL));
     // Configuração inicial da janela do GLUT
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);

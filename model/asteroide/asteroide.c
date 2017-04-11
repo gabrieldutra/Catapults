@@ -25,6 +25,21 @@ Asteroide asteroide_criaAsteroide(Vetor posicao, double velocidade, double incli
     return _novoAsteroide;
 }
 
+/** Asteroide - Desenha Asteroide
+* @param asteroide a ser desenhado
+**/
+void asteroide_desenhaAsteroide(Asteroide *asteroide){
+    // Começa a usar a cor cinza
+    glColor3f(.5, .5, .5);
+
+    // Desenha um triângulo
+    glBegin(GL_TRIANGLES);
+        glVertex2f(-32, -32);
+        glVertex2f( 32,  0);
+        glVertex2f(-32,  32);
+    glEnd();
+}
+
 /** Lista Asteroide - Adicionar um asteroide na lista
 * @param lista Lista que vai receber o elemento
 * @param asteroide Asteroide a ser adicionado
@@ -38,7 +53,7 @@ ListaAsteroide *listaasteroide_adicionaAsteroide(ListaAsteroide *lista, Asteroid
 
 /** Lista Asteroide - Deletar um asteroide da lista
 * @param lista Lista que vai ter o elemento removido
-* @param asteroide Asteroide a ser deletado
+* @param asteroide Asteróide a ser deletado
 **/
 ListaAsteroide *listaasteroide_deletaAsteroide(ListaAsteroide *lista, Asteroide *asteroide){
     // Percorre a lista até achar o elemento
@@ -54,4 +69,18 @@ ListaAsteroide *listaasteroide_deletaAsteroide(ListaAsteroide *lista, Asteroide 
         lista = lista->proximo;
     }
     return _primeiroElemento; // Caso não tenha encontrado nada só retorna o primeiro elemento
+}
+
+/** Lista Asteroide - Contar asteróides
+* @param lista Lista de asteróides
+* @return int o número de asteróides no mapa
+**/
+int listaasteroide_contaAsteroides(ListaAsteroide *lista){
+    int _numeroAsteroides = 0;
+    // Percorre a lista contando
+    while(lista != NULL){
+        _numeroAsteroides++;
+        lista = lista->proximo;
+    }
+    return _numeroAsteroides; 
 }
