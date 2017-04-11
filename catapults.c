@@ -58,12 +58,12 @@ void desenhaCena(void)
         ListaTiro *_tiros = tiros;
         while(_tiros != NULL){
             glPushMatrix();
-                glTranslatef(_tiros->tiro.posicao.x, _tiros->tiro.posicao.y, 0); 
-                glRotatef(_tiros->tiro.inclinacao, 0, 0, 1);  
-                tiro_desenhaTiro(&(_tiros->tiro));    
+                glTranslatef(_tiros->tiro.posicao.x, _tiros->tiro.posicao.y, 0);
+                glRotatef(_tiros->tiro.inclinacao, 0, 0, 1);
+                tiro_desenhaTiro(&(_tiros->tiro));
             glPopMatrix();
             _tiros = _tiros->proximo;
-        }                 
+        }
     glPopMatrix();
 
     // Desenha Asteróides
@@ -72,16 +72,16 @@ void desenhaCena(void)
         ListaAsteroide *_asteroides = asteroides;
         while(_asteroides != NULL){
             glPushMatrix();
-                glTranslatef(_asteroides->asteroide.posicao.x, _asteroides->asteroide.posicao.y, 0); 
-                glRotatef(_asteroides->asteroide.inclinacao, 0, 0, 1);  
-                asteroide_desenhaAsteroide(&(_asteroides->asteroide));    
+                glTranslatef(_asteroides->asteroide.posicao.x, _asteroides->asteroide.posicao.y, 0);
+                glRotatef(_asteroides->asteroide.inclinacao, 0, 0, 1);
+                asteroide_desenhaAsteroide(&(_asteroides->asteroide));
             glPopMatrix();
             _asteroides = _asteroides->proximo;
-        }                 
+        }
     glPopMatrix();
 
-    glPushMatrix();    
-        glRotatef(balista.inclinacao, 0, 0, 1);        
+    glPushMatrix();
+        glRotatef(balista.inclinacao, 0, 0, 1);
         // Desenha a Balista na origem
         balista_desenhaBalista(&balista);
         glEnd();
@@ -117,22 +117,22 @@ void redimensiona(int w, int h)
 
 void atualiza(int idx) {
     // Verificações de teclas
-    if(keyState['w'] && balista.velocidade < 5) balista.velocidade+=0.2;
-    
-    if(keyState['s'] && balista.velocidade < 5) {
+    if((keyState['w']||keyState['W']) && balista.velocidade < 5) balista.velocidade+=0.2;
+
+    if((keyState['s']||keyState['S']) && balista.velocidade < 5) {
         if(balista.velocidade > 0) balista.velocidade -= 0.2;
     }
 
-    if(keyState['a'] && controleDoJogo == KEYBOARD_CONTROL) balista.inclinacao+=5;
+    if((keyState['a']||keyState['A']) && controleDoJogo == KEYBOARD_CONTROL) balista.inclinacao+=5;
 
-    if(keyState['d'] && controleDoJogo == KEYBOARD_CONTROL) balista.inclinacao-=5;
+    if((keyState['d']||keyState['D']) && controleDoJogo == KEYBOARD_CONTROL) balista.inclinacao-=5;
 
 
     // O ângulo esperado pelas funções "cos" e "sin" da math.h devem
     // estar em radianos
 
     // Movimento da Balista
-    
+
     balista.posicao.x+=balista.velocidade*cos(grausParaRadianos(balista.inclinacao));
     balista.posicao.y+=balista.velocidade*sin(grausParaRadianos(balista.inclinacao));
     if(balista.velocidade > 0) balista.velocidade -=0.05;
@@ -141,7 +141,7 @@ void atualiza(int idx) {
     if(balista.podeAtirar < BALISTA_TEMPO_RECARGA) balista.podeAtirar++;
 
     // Movimento dos tiros
-    
+
     ListaTiro *_tiros = tiros;
     while(_tiros != NULL){
         _tiros->tiro.posicao.x+=_tiros->tiro.velocidade*cos(grausParaRadianos(_tiros->tiro.inclinacao));
@@ -154,11 +154,11 @@ void atualiza(int idx) {
     }
 
     // Gerenciamento dos asteróides
-    
+
     // Deleta os asteróides distantes
     ListaAsteroide *_asteroides = asteroides;
     while(_asteroides != NULL){
-        Vetor _asteroideBalista; // Vetor do asteróide até a balista 
+        Vetor _asteroideBalista; // Vetor do asteróide até a balista
         _asteroideBalista.x = balista.posicao.x-_asteroides->asteroide.posicao.x;
         _asteroideBalista.y = balista.posicao.y-_asteroides->asteroide.posicao.y;
 
@@ -174,10 +174,10 @@ void atualiza(int idx) {
         double _anguloNoRaioDoJogo = rand()%360; // o asteróide vem de algum ponto no raio do jogo
 
         Vetor _posicaoAsteroide;
-        _posicaoAsteroide.x = balista.posicao.x+(GAME_RADIUS*cos(grausParaRadianos(_anguloNoRaioDoJogo))); 
+        _posicaoAsteroide.x = balista.posicao.x+(GAME_RADIUS*cos(grausParaRadianos(_anguloNoRaioDoJogo)));
         _posicaoAsteroide.y = balista.posicao.y+(GAME_RADIUS*sin(grausParaRadianos(_anguloNoRaioDoJogo)));
 
-        Vetor _direcaoAsteroide; // O asteróide começa em direção à balista 
+        Vetor _direcaoAsteroide; // O asteróide começa em direção à balista
         _direcaoAsteroide.x = balista.posicao.x-_posicaoAsteroide.x;
         _direcaoAsteroide.y = balista.posicao.y-_posicaoAsteroide.y;
 
@@ -202,6 +202,29 @@ void atualiza(int idx) {
         _asteroides = _asteroides->proximo;
     }
 
+    // Verificação de colisões asteróide com tiro
+    _asteroides = asteroides;
+    while(_asteroides != NULL){
+        _tiros = tiros;
+        while(_tiros != NULL){
+            if(asteroide_checaColisaoComTiro(_asteroides->asteroide, _tiros->tiro)){
+                asteroides = listaasteroide_deletaAsteroide(asteroides, &(_asteroides->asteroide));
+                tiros = listatiro_deletaTiro(tiros, &(_tiros->tiro));
+            }
+            _tiros = _tiros->proximo;
+        }
+        _asteroides = _asteroides->proximo;
+    }
+
+    // Verificação de colisões asteróide com balista
+    _asteroides = asteroides;
+    while(_asteroides != NULL){
+        if(asteroide_checaColisaoComBalista(_asteroides->asteroide, balista)){
+            printf("Você destruiu a minha balista\n");
+        }
+        _asteroides = _asteroides->proximo;
+    }
+
     glutPostRedisplay();
     glutTimerFunc(17, atualiza, 0);
 }
@@ -216,11 +239,11 @@ void movimentoMouse(int x, int y) {
     Vetor _vetorDirecao;
     _vetorDirecao.x = x-(windowWidth/2);
     _vetorDirecao.y = -1*(y-(windowHeight/2)); // -1 para inverter o sentido de crescimento
-    
+
     Vetor _i;
     _i.x = 1;
     _i.y = 0;
-    
+
     // Define a inclinação da balista
     if(controleDoJogo == MOUSE_CONTROL) balista.inclinacao = vetor_calculaAngulo(_vetorDirecao,_i);
 }
@@ -237,6 +260,7 @@ void teclado(unsigned char key, int x, int y)
             exit(0);
             break;
         case 'c':
+        case 'C':
             controleDoJogo = !controleDoJogo; // inverte o controle do jogo
             break;
         case ' ':

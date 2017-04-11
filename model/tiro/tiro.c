@@ -13,10 +13,10 @@
 **/
 Tiro tiro_criaTiro(Vetor posicao, double velocidade, double inclinacao){
     Tiro _novoTiro;
-    
+
     Dimensoes _dimensoesTiro;
-    _dimensoesTiro.height = 16;
-    _dimensoesTiro.width = 32;
+    _dimensoesTiro.height = 2;
+    _dimensoesTiro.width = 8;
 
     _novoTiro.posicao = posicao;
     _novoTiro.dimensoes = _dimensoesTiro;
@@ -33,10 +33,11 @@ void tiro_desenhaTiro(Tiro *tiro){
     glColor3f(1, .5, .5);
 
     // Desenha um triângulo
-    glBegin(GL_TRIANGLES);
-        glVertex2f(-8, -8);
-        glVertex2f( 8,  0);
-        glVertex2f(-8,  8);
+    glBegin(GL_TRIANGLE_FAN);
+        glVertex2f(-tiro->dimensoes.width, -tiro->dimensoes.height);
+        glVertex2f( -tiro->dimensoes.width,  tiro->dimensoes.height);
+        glVertex2f(tiro->dimensoes.width,  tiro->dimensoes.height);
+        glVertex2f(tiro->dimensoes.width,  -tiro->dimensoes.height);
     glEnd();
 }
 
@@ -72,7 +73,7 @@ ListaTiro *listatiro_deletaTiro(ListaTiro *lista, Tiro *tiro){
             if(_elementoAnterior == NULL) return lista->proximo; // Caso o anterior seja NULL apenas retorna
             _elementoAnterior->proximo = lista->proximo; // Pula o elemento atual e retorna a posição inicial da lista
             return _primeiroElemento;
-        }    
+        }
         _elementoAnterior = lista;
         lista = lista->proximo;
     }
