@@ -3,9 +3,9 @@
 #include <SOIL/SOIL.h>
 #include <math.h>
 #include "../props/props.h"
-#include "asteroide.h"
 #include "../tiro/tiro.h"
 #include "../balista/balista.h"
+#include "asteroide.h"
 
 
 /** Asteroide - Construtor do Asteroide
