@@ -94,10 +94,10 @@ void desenhaCena(void)
     // HUD
 
     glPushMatrix();
-        glTranslatef(-(windowWidth/2), (windowHeight/2), 0);
+        glTranslatef(0, -(windowHeight/2), 0);
         // Barra do tiro
         glPushMatrix();
-            glTranslatef(barraTiro.posicao.x, -barraTiro.posicao.y, 0);
+            glTranslatef(barraTiro.posicao.x, barraTiro.posicao.y, 0);
             barra_desenhaBarra(&barraTiro);
         glPopMatrix();
 
@@ -117,7 +117,7 @@ void inicializa(void)
     balista = balista_criaBalista();
 
     Vetor _posicaoBarraTiro;
-    _posicaoBarraTiro.x = 100;
+    _posicaoBarraTiro.x = 0;
     _posicaoBarraTiro.y = 40;
 
     Dimensoes _dimensoesBarraTiro;
