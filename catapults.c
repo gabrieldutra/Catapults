@@ -17,7 +17,7 @@ int windowHeight = 600;
 #define KEYBOARD_CONTROL 1
 #define MOUSE_CONTROL 0
 #define GAME_RADIUS 1000
-#define NUMERO_ASTEROIDES 50
+#define NUMERO_ASTEROIDES 30
 
 int controleDoJogo = MOUSE_CONTROL;
 int keyState[256];
@@ -30,6 +30,10 @@ ListaAsteroide *asteroides = NULL;
 
 // Barras do HUD
 Barra barraTiro;
+
+// Informativos
+int pontuacaoUsuario = 0;
+int pontuacaoMaxima = 0;
 
 #define radianoParaGraus(radianos) (radianos * (180.0 / M_PI))
 #define grausParaRadianos(graus) ((graus * M_PI) / 180.0)
@@ -239,6 +243,9 @@ void atualiza(int idx) {
             if(asteroide_checaColisaoComTiro(_asteroides->asteroide, _tiros->tiro)){
                 asteroides = listaasteroide_deletaAsteroide(asteroides, &(_asteroides->asteroide));
                 tiros = listatiro_deletaTiro(tiros, &(_tiros->tiro));
+                pontuacaoUsuario++;
+                if(pontuacaoUsuario > pontuacaoMaxima) pontuacaoMaxima=pontuacaoUsuario;
+                printf("Asteróide destruido. Score: %d (MAX %d)\n", pontuacaoUsuario, pontuacaoMaxima);
             }
             _tiros = _tiros->proximo;
         }
@@ -250,6 +257,8 @@ void atualiza(int idx) {
     while(_asteroides != NULL){
         if(asteroide_checaColisaoComBalista(_asteroides->asteroide, balista)){
             printf("Você destruiu a minha balista\n");
+            if(pontuacaoUsuario > pontuacaoMaxima) pontuacaoMaxima=pontuacaoUsuario;
+            pontuacaoUsuario = 0;
         }
         _asteroides = _asteroides->proximo;
     }
