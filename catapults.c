@@ -3,6 +3,7 @@
 #include <SOIL/SOIL.h>
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include <time.h>
 #include "model/props/props.h"
 #include "model/mapa/mapa.h"
@@ -37,6 +38,14 @@ int pontuacaoMaxima = 0;
 
 #define radianoParaGraus(radianos) (radianos * (180.0 / M_PI))
 #define grausParaRadianos(graus) ((graus * M_PI) / 180.0)
+
+void escreveTexto(void * font, char *s, float x, float y, float z){
+    int i;
+    glRasterPos3f(x, y, z);
+
+    for (i=0; i < strlen(s); i++)
+       glutBitmapCharacter(font, s[i]);
+}
 
 void desenhaCena(void)
 {
@@ -103,7 +112,14 @@ void desenhaCena(void)
         glPushMatrix();
             glTranslatef(barraTiro.posicao.x, barraTiro.posicao.y, 0);
             barra_desenhaBarra(&barraTiro);
+            // Pontuação
+            char _scoreMessage[10];
+            sprintf(_scoreMessage, "Score: %d",pontuacaoUsuario);
+            glColor3f(1, 1, 1);
+            escreveTexto(GLUT_BITMAP_HELVETICA_18, _scoreMessage, -4.5* (int) strlen(_scoreMessage), 20, 0);
         glPopMatrix();
+
+        
 
     glPopMatrix();
 
