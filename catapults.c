@@ -11,6 +11,7 @@
 #include "model/tiro/tiro.h"
 #include "model/asteroide/asteroide.h"
 #include "model/barra/barra.h"
+#include "model/menu/menu.h"
 
 int windowWidth = 800;
 int windowHeight = 600;
@@ -21,6 +22,7 @@ int windowHeight = 600;
 #define NUMERO_ASTEROIDES 30
 
 int controleDoJogo = MOUSE_CONTROL;
+int jogoRodando = 0;
 int keyState[256];
 
 // Objetos
@@ -28,6 +30,7 @@ Mapa mapa;
 Balista balista;
 ListaTiro *tiros = NULL;
 ListaAsteroide *asteroides = NULL;
+Menu menuPause;
 
 // Barras do HUD
 Barra barraTiro;
@@ -38,14 +41,6 @@ int pontuacaoMaxima = 0;
 
 #define radianoParaGraus(radianos) (radianos * (180.0 / M_PI))
 #define grausParaRadianos(graus) ((graus * M_PI) / 180.0)
-
-void escreveTexto(void * font, char *s, float x, float y, float z){
-    int i;
-    glRasterPos3f(x, y, z);
-
-    for (i=0; i < strlen(s); i++)
-       glutBitmapCharacter(font, s[i]);
-}
 
 void desenhaCena(void)
 {
@@ -119,10 +114,15 @@ void desenhaCena(void)
             escreveTexto(GLUT_BITMAP_HELVETICA_18, _scoreMessage, -4.5* (int) strlen(_scoreMessage), 20, 0);
         glPopMatrix();
 
-        
-
     glPopMatrix();
 
+    // Menu de pause
+    if(menuPause.estaAberto){
+        glPushMatrix();
+            glTranslatef(menuPause.posicao.x, menuPause.posicao.y, 0);
+            menu_desenhaMenu(&menuPause);
+        glPopMatrix();
+    }
 
     // Diz ao OpenGL para colocar o que desenhamos na tela
     glutSwapBuffers();
@@ -146,6 +146,22 @@ void inicializa(void)
 
     barraTiro = barra_criaBarra(_posicaoBarraTiro, _dimensoesBarraTiro, 100, 1, .5, 0);
 
+    Vetor _posicaoMenuPause;
+    _posicaoMenuPause.x = 0;
+    _posicaoMenuPause.y = 0;
+    
+    char *_tituloMenuPause = strdup("Pause");
+
+    Opcao *_opcoesMenuPause = NULL;
+
+    char *_opcaoRetomar = strdup("Retomar");
+    
+    _opcoesMenuPause = opcao_adicionaOpcao(_opcoesMenuPause, _opcaoRetomar);
+    _opcoesMenuPause = opcao_adicionaOpcao(_opcoesMenuPause, _opcaoRetomar);
+    _opcoesMenuPause = opcao_adicionaOpcao(_opcoesMenuPause, _opcaoRetomar);
+
+    menuPause = menu_criaMenu(_posicaoMenuPause, _tituloMenuPause, _opcoesMenuPause, 3);
+
     // cor para limpar a tela
     glClearColor(0, 0, 0, 0);      // preto
 }
@@ -163,7 +179,7 @@ void redimensiona(int w, int h)
    glLoadIdentity();
 }
 
-void atualiza(int idx) {
+void atualizaJogo(){
     // Verificações de teclas
     if((keyState['w']||keyState['W']) && balista.velocidade < 5) balista.velocidade+=0.2;
 
@@ -183,7 +199,7 @@ void atualiza(int idx) {
 
     balista.posicao.x+=balista.velocidade*cos(grausParaRadianos(balista.inclinacao));
     balista.posicao.y+=balista.velocidade*sin(grausParaRadianos(balista.inclinacao));
-    if(balista.velocidade > 0) balista.velocidade -=0.05;
+    if(balista.velocidade > 0) balista.velocidade -= 0.05;
     if(balista.velocidade < 0) balista.velocidade = 0;
 
     if(balista.podeAtirar < BALISTA_TEMPO_RECARGA) balista.podeAtirar++;
@@ -278,6 +294,11 @@ void atualiza(int idx) {
         }
         _asteroides = _asteroides->proximo;
     }
+}
+
+void atualiza(int idx) {
+
+    if(jogoRodando) atualizaJogo(); // Caso o jogo esteja rodando chama a atualizaJogo
 
     glutPostRedisplay();
     glutTimerFunc(17, atualiza, 0);
@@ -299,7 +320,7 @@ void movimentoMouse(int x, int y) {
     _i.y = 0;
 
     // Define a inclinação da balista
-    if(controleDoJogo == MOUSE_CONTROL) balista.inclinacao = vetor_calculaAngulo(_vetorDirecao,_i);
+    if(jogoRodando && controleDoJogo == MOUSE_CONTROL) balista.inclinacao = vetor_calculaAngulo(_vetorDirecao,_i);
 }
 
 // Callback de evento de teclado

@@ -1,4 +1,7 @@
+#include <GL/glew.h>
+#include <GL/freeglut.h>
 #include <math.h>
+#include <string.h>
 #include "props.h"
 
 #define radianoParaGraus(radianos) (radianos * (180.0 / M_PI))
@@ -44,4 +47,19 @@ void vetor_normalizaVetor(Vetor *v){
 double vetor_calculaModulo(Vetor v){
     double _moduloVetor = sqrt(pow(v.x,2)+pow(v.y,2));
     return _moduloVetor;
+}
+
+/** Geral - Escreve texto
+* @param font Fonte de texto
+* @param s String a ser escrita
+* @param x posição x
+* @param y posição y
+* @param z posição z
+**/
+void escreveTexto(void * font, char *s, float x, float y, float z){
+    int i;
+    glRasterPos3f(x, y, z);
+
+    for (i=0; i < strlen(s); i++)
+       glutBitmapCharacter(font, s[i]);
 }
