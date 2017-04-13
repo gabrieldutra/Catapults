@@ -16,3 +16,5 @@ Opcao *opcao_adicionaOpcao(Opcao *lista, char *opcao);
 
 Menu menu_criaMenu(Vetor posicao, char *titulo, Opcao *opcoes, int n_opcoes);
 void menu_desenhaMenu(Menu *menu);
+void menu_selecionaAbaixo(Menu *menu);
+void menu_selecionaAcima(Menu *menu);

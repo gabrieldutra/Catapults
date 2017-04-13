@@ -11,10 +11,18 @@
 * @param opcao String a ser adicionada como opção
 **/
 Opcao *opcao_adicionaOpcao(Opcao *lista, char *opcao){
-    Opcao *_novaLista = (Opcao *) malloc(sizeof(Opcao));
-    _novaLista->opcao = opcao;
-    _novaLista->proximo = lista;
-    return _novaLista;
+    Opcao *_novaOpcao = (Opcao *) malloc(sizeof(Opcao));
+    _novaOpcao->opcao = opcao;
+    _novaOpcao->proximo = NULL;
+    
+    if(lista == NULL) return _novaOpcao;
+
+    Opcao *_primeiroElemento = lista;
+    // Percorre a lista até o final
+    while(lista->proximo != NULL) lista = lista->proximo;
+    
+    lista->proximo = _novaOpcao;
+    return _primeiroElemento;
 }
 
 /** Menu - Construtor do Menu
@@ -52,9 +60,6 @@ void menu_desenhaMenu(Menu *menu){
         glVertex2f((_menuWidth/2),  -(_menuHeight/2));
     glEnd();
 
-    // // Pontuação
-    // char _scoreMessage[10];
-    // sprintf(_scoreMessage, "Score");
     glColor3f(1, 1, 1);
     int _linhaAtual=(_menuHeight/2)-20;
     escreveTexto(GLUT_BITMAP_HELVETICA_18, menu->titulo, -4.5* (int) strlen(menu->titulo), _linhaAtual, 0);
@@ -65,8 +70,24 @@ void menu_desenhaMenu(Menu *menu){
         if(_count == menu->opcaoAtual) {
             glColor3f(1, 1, 1);
         } else glColor3f(.6, .6, .6);
-        escreveTexto(GLUT_BITMAP_HELVETICA_18, _opcao->opcao, -4.5* (int) strlen(_opcao->opcao), _linhaAtual, 0);
+        escreveTexto(GLUT_BITMAP_HELVETICA_18, _opcao->opcao, -40, _linhaAtual, 0);
         _opcao = _opcao->proximo;
         _count++;
     }
+}
+
+/** Menu - Selecionar Opção abaixo
+* @param menu a ser desenhada
+**/
+void menu_selecionaAbaixo(Menu *menu){
+    menu->opcaoAtual++;
+    if(menu->opcaoAtual >= menu->n_opcoes) menu->opcaoAtual = 0;
+}
+
+/** Menu - Selecionar Opção acima
+* @param menu a ser desenhada
+**/
+void menu_selecionaAcima(Menu *menu){
+    menu->opcaoAtual--;
+    if(menu->opcaoAtual < 0) menu->opcaoAtual = menu->n_opcoes-1;
 }

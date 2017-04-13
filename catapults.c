@@ -155,10 +155,12 @@ void inicializa(void)
     Opcao *_opcoesMenuPause = NULL;
 
     char *_opcaoRetomar = strdup("Retomar");
+    char *_opcaoReiniciar = strdup("Reiniciar");
+    char *_opcaoSair = strdup("Sair");
     
     _opcoesMenuPause = opcao_adicionaOpcao(_opcoesMenuPause, _opcaoRetomar);
-    _opcoesMenuPause = opcao_adicionaOpcao(_opcoesMenuPause, _opcaoRetomar);
-    _opcoesMenuPause = opcao_adicionaOpcao(_opcoesMenuPause, _opcaoRetomar);
+    _opcoesMenuPause = opcao_adicionaOpcao(_opcoesMenuPause, _opcaoReiniciar);
+    _opcoesMenuPause = opcao_adicionaOpcao(_opcoesMenuPause, _opcaoSair);
 
     menuPause = menu_criaMenu(_posicaoMenuPause, _tituloMenuPause, _opcoesMenuPause, 3);
 
@@ -323,6 +325,17 @@ void movimentoMouse(int x, int y) {
     if(jogoRodando && controleDoJogo == MOUSE_CONTROL) balista.inclinacao = vetor_calculaAngulo(_vetorDirecao,_i);
 }
 
+// Callback do glutSpecialFunc
+void tecladoEspecial(int key, int x, int y){
+    if(key == GLUT_KEY_DOWN){
+        if(menuPause.estaAberto) menu_selecionaAbaixo(&menuPause);
+    }
+
+    if(key == GLUT_KEY_UP){
+        if(menuPause.estaAberto) menu_selecionaAcima(&menuPause);
+    }
+}
+
 // Callback de evento de teclado
 void teclado(unsigned char key, int x, int y)
 {
@@ -330,9 +343,23 @@ void teclado(unsigned char key, int x, int y)
     Tiro _novoTiro;
     switch(key)
     {
+        case 'w':
+        case 'W':
+            if(menuPause.estaAberto) menu_selecionaAcima(&menuPause);
+            break;
+        case 's':
+        case 'S':
+            if(menuPause.estaAberto) menu_selecionaAbaixo(&menuPause);
+            break;
         // Tecla ESC
         case 27:
-            exit(0);
+            if(menuPause.estaAberto){
+                menuPause.estaAberto = 0;
+                jogoRodando = 1;
+            } else {
+                menuPause.estaAberto = 1;
+                jogoRodando = 0;
+            }
             break;
         case 'c':
         case 'C':
@@ -343,6 +370,33 @@ void teclado(unsigned char key, int x, int y)
                 _novoTiro = tiro_criaTiro(balista.posicao, 10, balista.inclinacao);
                 tiros = listatiro_adicionaTiro(tiros, _novoTiro);
                 balista.podeAtirar = 0;
+            }
+            break;
+        // Tecla ENTER
+        case 13:
+            if(menuPause.estaAberto){
+                if(menuPause.opcaoAtual == 0){ // Retomar
+                    menuPause.estaAberto = 0;
+                    jogoRodando = 1;
+                }
+
+                if(menuPause.opcaoAtual == 1){ // Reiniciar
+                    balista.posicao.x = 0;
+                    balista.posicao.y = 0;
+                    ListaAsteroide *_asteroides = asteroides;
+                    // Deleta todos os asteróides
+                    while(_asteroides != NULL){
+                        asteroides = listaasteroide_deletaAsteroide(asteroides, &_asteroides->asteroide);
+                        _asteroides = _asteroides->proximo;
+                    }
+                    menuPause.estaAberto = 0;
+                    pontuacaoUsuario = 0;
+                    jogoRodando = 1;
+                }
+
+                if(menuPause.opcaoAtual == 2){ // Sair
+                    exit(0);
+                }
             }
             break;
         default:
@@ -373,6 +427,7 @@ int main(int argc, char **argv)
     glutDisplayFunc(desenhaCena);
     glutReshapeFunc(redimensiona);
     glutPassiveMotionFunc(movimentoMouse);
+    glutSpecialFunc(tecladoEspecial);
     glutKeyboardFunc(teclado);
     glutKeyboardUpFunc(tecladoUp);
     glutTimerFunc(0, atualiza, 0);
