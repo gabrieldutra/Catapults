@@ -36,7 +36,7 @@ Menu menu_criaMenu(Vetor posicao, char *titulo, Opcao *opcoes, int n_opcoes){
     _novoMenu.opcoes = opcoes;
     _novoMenu.n_opcoes = n_opcoes;
     _novoMenu.opcaoAtual = 0;
-    _novoMenu.estaAberto = 1;
+    _novoMenu.estaAberto = 0;
 
     return _novoMenu;
 }

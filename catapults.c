@@ -22,7 +22,7 @@ int windowHeight = 600;
 #define NUMERO_ASTEROIDES 30
 
 int controleDoJogo = MOUSE_CONTROL;
-int jogoRodando = 0;
+int jogoRodando = 1;
 int keyState[256];
 
 // Objetos
@@ -31,6 +31,7 @@ Balista balista;
 ListaTiro *tiros = NULL;
 ListaAsteroide *asteroides = NULL;
 Menu menuPause;
+Menu menuGameOver;
 
 // Barras do HUD
 Barra barraTiro;
@@ -124,6 +125,14 @@ void desenhaCena(void)
         glPopMatrix();
     }
 
+    // Menu de game over
+    if(menuGameOver.estaAberto){
+        glPushMatrix();
+            glTranslatef(menuGameOver.posicao.x, menuGameOver.posicao.y, 0);
+            menu_desenhaMenu(&menuGameOver);
+        glPopMatrix();
+    }
+
     // Diz ao OpenGL para colocar o que desenhamos na tela
     glutSwapBuffers();
 }
@@ -146,23 +155,31 @@ void inicializa(void)
 
     barraTiro = barra_criaBarra(_posicaoBarraTiro, _dimensoesBarraTiro, 100, 1, .5, 0);
 
-    Vetor _posicaoMenuPause;
-    _posicaoMenuPause.x = 0;
-    _posicaoMenuPause.y = 0;
+    Vetor _posicaoMenus;
+    _posicaoMenus.x = 0;
+    _posicaoMenus.y = 0;
     
     char *_tituloMenuPause = strdup("Pause");
+    char *_tituloMenuGameOver = strdup("Game Over");
 
     Opcao *_opcoesMenuPause = NULL;
+    Opcao *_opcoesMenuGameOver = NULL;
 
     char *_opcaoRetomar = strdup("Retomar");
     char *_opcaoReiniciar = strdup("Reiniciar");
+    char *_opcaoControle = strdup("Mouse: Sim");
     char *_opcaoSair = strdup("Sair");
     
     _opcoesMenuPause = opcao_adicionaOpcao(_opcoesMenuPause, _opcaoRetomar);
     _opcoesMenuPause = opcao_adicionaOpcao(_opcoesMenuPause, _opcaoReiniciar);
+    _opcoesMenuPause = opcao_adicionaOpcao(_opcoesMenuPause, _opcaoControle);
     _opcoesMenuPause = opcao_adicionaOpcao(_opcoesMenuPause, _opcaoSair);
 
-    menuPause = menu_criaMenu(_posicaoMenuPause, _tituloMenuPause, _opcoesMenuPause, 3);
+    _opcoesMenuGameOver = opcao_adicionaOpcao(_opcoesMenuGameOver, _opcaoReiniciar);
+    _opcoesMenuGameOver = opcao_adicionaOpcao(_opcoesMenuGameOver, _opcaoSair);
+
+    menuPause = menu_criaMenu(_posicaoMenus, _tituloMenuPause, _opcoesMenuPause, 4);
+    menuGameOver = menu_criaMenu(_posicaoMenus, _tituloMenuGameOver, _opcoesMenuGameOver, 2);
 
     // cor para limpar a tela
     glClearColor(0, 0, 0, 0);      // preto
@@ -279,7 +296,6 @@ void atualizaJogo(){
                 tiros = listatiro_deletaTiro(tiros, &(_tiros->tiro));
                 pontuacaoUsuario++;
                 if(pontuacaoUsuario > pontuacaoMaxima) pontuacaoMaxima=pontuacaoUsuario;
-                printf("Asteróide destruido. Score: %d (MAX %d)\n", pontuacaoUsuario, pontuacaoMaxima);
             }
             _tiros = _tiros->proximo;
         }
@@ -290,9 +306,13 @@ void atualizaJogo(){
     _asteroides = asteroides;
     while(_asteroides != NULL){
         if(asteroide_checaColisaoComBalista(_asteroides->asteroide, balista)){
-            printf("Você destruiu a minha balista\n");
             if(pontuacaoUsuario > pontuacaoMaxima) pontuacaoMaxima=pontuacaoUsuario;
-            pontuacaoUsuario = 0;
+            jogoRodando = 0;
+            menuPause.estaAberto = 0;
+            char _tituloMenuGameOver[50];
+            sprintf(_tituloMenuGameOver, "Highscore: %d", pontuacaoMaxima);
+            menuGameOver.titulo = strdup(_tituloMenuGameOver);
+            menuGameOver.estaAberto = 1;
         }
         _asteroides = _asteroides->proximo;
     }
@@ -329,10 +349,12 @@ void movimentoMouse(int x, int y) {
 void tecladoEspecial(int key, int x, int y){
     if(key == GLUT_KEY_DOWN){
         if(menuPause.estaAberto) menu_selecionaAbaixo(&menuPause);
+        if(menuGameOver.estaAberto) menu_selecionaAbaixo(&menuGameOver);
     }
 
     if(key == GLUT_KEY_UP){
         if(menuPause.estaAberto) menu_selecionaAcima(&menuPause);
+        if(menuGameOver.estaAberto) menu_selecionaAcima(&menuGameOver);
     }
 }
 
@@ -346,24 +368,22 @@ void teclado(unsigned char key, int x, int y)
         case 'w':
         case 'W':
             if(menuPause.estaAberto) menu_selecionaAcima(&menuPause);
+            if(menuGameOver.estaAberto) menu_selecionaAcima(&menuGameOver);
             break;
         case 's':
         case 'S':
             if(menuPause.estaAberto) menu_selecionaAbaixo(&menuPause);
+            if(menuGameOver.estaAberto) menu_selecionaAbaixo(&menuGameOver);
             break;
         // Tecla ESC
         case 27:
-            if(menuPause.estaAberto){
+            if(!menuGameOver.estaAberto) if(menuPause.estaAberto){
                 menuPause.estaAberto = 0;
                 jogoRodando = 1;
             } else {
                 menuPause.estaAberto = 1;
                 jogoRodando = 0;
             }
-            break;
-        case 'c':
-        case 'C':
-            controleDoJogo = !controleDoJogo; // inverte o controle do jogo
             break;
         case ' ':
             if(balista.podeAtirar == BALISTA_TEMPO_RECARGA){
@@ -374,6 +394,30 @@ void teclado(unsigned char key, int x, int y)
             break;
         // Tecla ENTER
         case 13:
+            if(menuGameOver.estaAberto){
+                if(menuGameOver.opcaoAtual == 0){ // Retomar
+                    balista.posicao.x = 0;
+                    balista.posicao.y = 0;
+                    balista.inclinacao = 0;
+                    balista.velocidade = 0;
+                    balista.podeAtirar = BALISTA_TEMPO_RECARGA;
+                    ListaAsteroide *_asteroides = asteroides;
+                    // Deleta todos os asteróides
+                    while(_asteroides != NULL){
+                        asteroides = listaasteroide_deletaAsteroide(asteroides, &_asteroides->asteroide);
+                        _asteroides = _asteroides->proximo;
+                    }
+                    menuGameOver.estaAberto = 0;
+                    menuPause.estaAberto = 0;
+                    pontuacaoUsuario = 0;
+                    jogoRodando = 1;
+                }
+
+                if(menuGameOver.opcaoAtual == 1){ // Sair
+                    exit(0);
+                }
+            }
+
             if(menuPause.estaAberto){
                 if(menuPause.opcaoAtual == 0){ // Retomar
                     menuPause.estaAberto = 0;
@@ -397,7 +441,17 @@ void teclado(unsigned char key, int x, int y)
                     jogoRodando = 1;
                 }
 
-                if(menuPause.opcaoAtual == 2){ // Sair
+                if(menuPause.opcaoAtual == 2){ // Mouse: Sim/não
+                    if(controleDoJogo == MOUSE_CONTROL){
+                        controleDoJogo = KEYBOARD_CONTROL;
+                        menuPause.opcoes->proximo->proximo->opcao = strdup("Mouse: Nao");
+                    } else {
+                        controleDoJogo = MOUSE_CONTROL;
+                        menuPause.opcoes->proximo->proximo->opcao = strdup("Mouse: Sim");
+                    }
+                }
+
+                if(menuPause.opcaoAtual == 3){ // Sair
                     exit(0);
                 }
             }
