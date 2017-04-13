@@ -383,6 +383,9 @@ void teclado(unsigned char key, int x, int y)
                 if(menuPause.opcaoAtual == 1){ // Reiniciar
                     balista.posicao.x = 0;
                     balista.posicao.y = 0;
+                    balista.inclinacao = 0;
+                    balista.velocidade = 0;
+                    balista.podeAtirar = BALISTA_TEMPO_RECARGA;
                     ListaAsteroide *_asteroides = asteroides;
                     // Deleta todos os asteróides
                     while(_asteroides != NULL){
