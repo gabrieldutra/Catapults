@@ -19,11 +19,12 @@ int windowHeight = 600;
 #define KEYBOARD_CONTROL 1
 #define MOUSE_CONTROL 0
 #define GAME_RADIUS 1000
-#define NUMERO_ASTEROIDES 30
+#define NUMERO_ASTEROIDES_BASE 15
 
 int controleDoJogo = MOUSE_CONTROL;
 int jogoRodando = 1;
 int keyState[256];
+int numeroAsteroides = NUMERO_ASTEROIDES_BASE;
 
 // Objetos
 Mapa mapa;
@@ -265,7 +266,7 @@ void atualizaJogo(){
     }
 
     // Verifica se o número de asteróides no mapa é menor do que o definido
-    if(listaasteroide_contaAsteroides(asteroides) < NUMERO_ASTEROIDES){
+    if(listaasteroide_contaAsteroides(asteroides) < numeroAsteroides){
         // Cria um asteróide no raio do jogo
         double _anguloNoRaioDoJogo = rand()%360; // o asteróide vem de algum ponto no raio do jogo
 
@@ -326,12 +327,7 @@ void atualizaJogo(){
                 asteroides = listaasteroide_deletaAsteroide(asteroides, &(_asteroides->asteroide));
                 tiros = listatiro_deletaTiro(tiros, &(_tiros->tiro));
                 pontuacaoUsuario++;
-                if(pontuacaoUsuario > pontuacaoMaxima){
-                    pontuacaoMaxima=pontuacaoUsuario;
-                    registraPontuacaoMaxima = fopen("highscore.ctp","w");
-                    fprintf(registraPontuacaoMaxima, "%d\n", pontuacaoMaxima);
-                    fclose(registraPontuacaoMaxima);
-                }
+                numeroAsteroides = NUMERO_ASTEROIDES_BASE + pontuacaoUsuario;
             }
             _tiros = _tiros->proximo;
         }
@@ -341,8 +337,13 @@ void atualizaJogo(){
     // Verificação de colisões asteróide com balista
     _asteroides = asteroides;
     while(_asteroides != NULL){
-        if(asteroide_checaColisaoComBalista(_asteroides->asteroide, balista)){
-            if(pontuacaoUsuario > pontuacaoMaxima) pontuacaoMaxima=pontuacaoUsuario;
+        if(asteroide_checaColisaoComBalista(_asteroides->asteroide, balista)){            
+            if(pontuacaoUsuario > pontuacaoMaxima){
+                pontuacaoMaxima=pontuacaoUsuario;
+                registraPontuacaoMaxima = fopen("highscore.ctp","w");
+                fprintf(registraPontuacaoMaxima, "%d\n", pontuacaoMaxima);
+                fclose(registraPontuacaoMaxima);
+            }
             jogoRodando = 0;
             menuPause.estaAberto = 0;
             char _tituloMenuGameOver[50];
