@@ -145,13 +145,12 @@ void inicializa(void)
     //abre o arquivo Pontuação máxima
     registraPontuacaoMaxima = fopen("highscore.ctp","r");
     if (registraPontuacaoMaxima == NULL) pontuacaoMaxima=0; //se o arquivo não existir, salva a pontuação como 0
-    else{
-        while(fscanf(registraPontuacaoMaxima,"%d",&pontuacaoMaxima)){
+    else{ //se não, salva na variavel pontuacaoMaxima
+            fscanf(registraPontuacaoMaxima,"%d",&pontuacaoMaxima);
             printf("%d\n",pontuacaoMaxima);
-            registraPontuacaoMaxima++;
-        }
+            fclose(registraPontuacaoMaxima); //fecha o arquivo
     }
-    fclose(registraPontuacaoMaxima); //fecha o arquivo
+
 
     int i;
     for(i=0;i<256;i++) keyState[i]=0;
