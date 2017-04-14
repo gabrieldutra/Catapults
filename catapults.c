@@ -308,8 +308,8 @@ void atualizaJogo(){
         _tiros = tiros;
         while(_tiros != NULL){
             if(asteroide_checaColisaoComTiro(_asteroides->asteroide, _tiros->tiro)){ //se houve colisão
-                int i, _numAsteroide;
-                for(i=0,_numAsteroide=rand()%3 + 2;i<_numAsteroide;i++){ //cria numAsteroide asteróides
+                int _i, _numAsteroide;
+                for(_i=0,_numAsteroide=rand()%3 + 2;_i<_numAsteroide;_i++){ //cria numAsteroide asteróides
 
                     Dimensoes _dimensaoAtual; //variavel para tratar as dimensões dos asteroides a serem criados
                     _dimensaoAtual.width = _asteroides->asteroide.dimensoes.width/1.5 + rand()%3; //diminui o tamanho em um valor aleatorio menor que o original
