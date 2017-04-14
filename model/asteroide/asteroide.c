@@ -11,20 +11,18 @@
 /** Asteroide - Construtor do Asteroide
 * @param posicao Vetor da posicao inicial do asteroide
 * @param velocidade a velocidade do Asteroide
+* @param dimensoes as dimensoes do Asteroide
 * @param inclinacao a inclinação do asteroide
 * @return Asteroide com as variáveis criadas
 **/
-Asteroide asteroide_criaAsteroide(Vetor posicao, double velocidade, double inclinacao){
+Asteroide asteroide_criaAsteroide(Vetor posicao, double velocidade, Dimensoes dimensoes, double inclinacao){
     Asteroide _novoAsteroide;
 
-    Dimensoes _dimensoesAsteroide;
-    _dimensoesAsteroide.height = 32;
-    _dimensoesAsteroide.width = 32;
-
     _novoAsteroide.posicao = posicao;
-    _novoAsteroide.dimensoes = _dimensoesAsteroide;
+    _novoAsteroide.dimensoes = dimensoes;
     _novoAsteroide.velocidade = velocidade;
     _novoAsteroide.inclinacao = inclinacao;
+
     return _novoAsteroide;
 }
 
@@ -34,7 +32,7 @@ Asteroide asteroide_criaAsteroide(Vetor posicao, double velocidade, double incli
 void asteroide_desenhaAsteroide(Asteroide *asteroide){
     int i;
     // Começa a usar a cor cinza
-    glColor3f(.5, .5, .5);
+    glColor3f(1, 0, 0);
 
     // Desenha um triângulo
     glBegin(GL_TRIANGLE_FAN);

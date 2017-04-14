@@ -286,7 +286,11 @@ void atualizaJogo(){
         // A velocidade dos asteróides varia entre ASTEROIDE_VELOCIDADE_MINIMA e ASTEROIDE_VELOCIDADE_MAXIMA
         double _velocidadeAsteroide = ASTEROIDE_VELOCIDADE_MINIMA + (float)( rand()%(ASTEROIDE_VELOCIDADE_MAXIMA-ASTEROIDE_VELOCIDADE_MINIMA+1)*100)/100;
 
-        Asteroide _novoAsteroide = asteroide_criaAsteroide(_posicaoAsteroide, _velocidadeAsteroide, _anguloAsteroide);
+        Dimensoes _dimensoesAsteroide;
+        _dimensoesAsteroide.width=ASTEROIDE_TAMANHO_MAXIMO;
+        _dimensoesAsteroide.height=ASTEROIDE_TAMANHO_MAXIMO;
+
+        Asteroide _novoAsteroide = asteroide_criaAsteroide(_posicaoAsteroide, _velocidadeAsteroide, _dimensoesAsteroide, _anguloAsteroide);
         asteroides = listaasteroide_adicionaAsteroide(asteroides, _novoAsteroide);
     }
 
@@ -303,7 +307,22 @@ void atualizaJogo(){
     while(_asteroides != NULL){
         _tiros = tiros;
         while(_tiros != NULL){
-            if(asteroide_checaColisaoComTiro(_asteroides->asteroide, _tiros->tiro)){
+            if(asteroide_checaColisaoComTiro(_asteroides->asteroide, _tiros->tiro)){ //se houve colisão
+                int i, _numAsteroide;
+                for(i=0,_numAsteroide=rand()%3 + 2;i<_numAsteroide;i++){ //cria numAsteroide asteróides
+
+                    Dimensoes _dimensaoAtual; //variavel para tratar as dimensões dos asteroides a serem criados
+                    _dimensaoAtual.width = _asteroides->asteroide.dimensoes.width/1.5 + rand()%3; //diminui o tamanho em um valor aleatorio menor que o original
+                    _dimensaoAtual.height = _dimensaoAtual.width;
+                    if(_dimensaoAtual.width<=12) break; //limita o numero de divisões a 2
+
+                    double _anguloAsteroide = rand()%360; // O ângulo do asteróide é de 0 a 360
+
+                    //Cria o asteróide e o adiciona a lista
+                    Asteroide _novoAsteroide = asteroide_criaAsteroide(_asteroides->asteroide.posicao, _asteroides->asteroide.velocidade+rand()%3, _dimensaoAtual, _anguloAsteroide);
+                    asteroides = listaasteroide_adicionaAsteroide(asteroides,_novoAsteroide);
+                }
+
                 asteroides = listaasteroide_deletaAsteroide(asteroides, &(_asteroides->asteroide));
                 tiros = listatiro_deletaTiro(tiros, &(_tiros->tiro));
                 pontuacaoUsuario++;
