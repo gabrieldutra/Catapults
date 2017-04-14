@@ -30,4 +30,7 @@
 
 # Debug files
 *.dSYM/
-*.su
+*.
+
+# Game files
+*.ctp
