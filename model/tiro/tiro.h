@@ -3,6 +3,7 @@ typedef struct tiro{
     double velocidade; // O módulo da velocidade, ela sempre fará vetor com a inclinação
     Dimensoes dimensoes;
     double inclinacao;
+    int textura;
 } Tiro;
 
 typedef struct listaTiro{
@@ -10,7 +11,7 @@ typedef struct listaTiro{
     struct listaTiro *proximo;
 } ListaTiro;
 
-Tiro tiro_criaTiro(Vetor posicao, double velocidade, double inclinacao);
+Tiro tiro_criaTiro(Vetor posicao, double velocidade, double inclinacao, int *textura);
 void tiro_desenhaTiro(Tiro *tiro);
 void tiro_atualizaPosicao(Tiro *tiro, Vetor posicao);
 

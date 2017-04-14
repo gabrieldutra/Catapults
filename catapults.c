@@ -26,6 +26,8 @@ int jogoRodando = 1;
 int keyState[256];
 int numeroAsteroides = NUMERO_ASTEROIDES_BASE;
 
+int texturaTiro;
+
 // Objetos
 Mapa mapa;
 Balista balista;
@@ -49,6 +51,9 @@ int pontuacaoMaxima;
 void desenhaCena(void)
 {
     glClear(GL_COLOR_BUFFER_BIT);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glPushMatrix();
         /* Move o sistema de coordenadas para a posição onde deseja-se desenhar
@@ -148,7 +153,6 @@ void inicializa(void)
     if (registraPontuacaoMaxima == NULL) pontuacaoMaxima=0; //se o arquivo não existir, salva a pontuação como 0
     else{ //se não, salva na variavel pontuacaoMaxima
             fscanf(registraPontuacaoMaxima,"%d",&pontuacaoMaxima);
-            printf("%d\n",pontuacaoMaxima);
             fclose(registraPontuacaoMaxima); //fecha o arquivo
     }
 
@@ -193,6 +197,16 @@ void inicializa(void)
 
     menuPause = menu_criaMenu(_posicaoMenus, _tituloMenuPause, _opcoesMenuPause, 4);
     menuGameOver = menu_criaMenu(_posicaoMenus, _tituloMenuGameOver, _opcoesMenuGameOver, 2);
+
+    // Texturas
+    texturaTiro = SOIL_load_OGL_texture(
+        "textures/arrow.png",
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+		SOIL_FLAG_INVERT_Y
+	);
+
+    if(texturaTiro == 0) printf("Erro do SOIL: '%s'\n", SOIL_last_result());
 
     // cor para limpar a tela
     glClearColor(0, 0, 0, 0);      // preto
@@ -424,7 +438,7 @@ void teclado(unsigned char key, int x, int y)
             break;
         case ' ':
             if(balista.podeAtirar == BALISTA_TEMPO_RECARGA){
-                _novoTiro = tiro_criaTiro(balista.posicao, 10, balista.inclinacao);
+                _novoTiro = tiro_criaTiro(balista.posicao, 10, balista.inclinacao, &texturaTiro);
                 tiros = listatiro_adicionaTiro(tiros, _novoTiro);
                 balista.podeAtirar = 0;
             }

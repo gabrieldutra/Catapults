@@ -9,19 +9,23 @@
 * @param posicao Vetor da posicao inicial do tiro
 * @param velocidade a velocidade do tiro
 * @param inclinacao a inclinação do tiro
+* @param textura a textura do tiro
 * @return tiro com as variáveis criadas
 **/
-Tiro tiro_criaTiro(Vetor posicao, double velocidade, double inclinacao){
+Tiro tiro_criaTiro(Vetor posicao, double velocidade, double inclinacao, int *textura){
     Tiro _novoTiro;
 
     Dimensoes _dimensoesTiro;
-    _dimensoesTiro.height = 4;
-    _dimensoesTiro.width = 16;
+    _dimensoesTiro.height = 11;
+    _dimensoesTiro.width = 43;
 
     _novoTiro.posicao = posicao;
     _novoTiro.dimensoes = _dimensoesTiro;
     _novoTiro.velocidade = velocidade;
     _novoTiro.inclinacao = inclinacao;
+
+    _novoTiro.textura = *textura;
+
     return _novoTiro;
 }
 
@@ -29,16 +33,21 @@ Tiro tiro_criaTiro(Vetor posicao, double velocidade, double inclinacao){
 * @param tiro a ser desenhado
 **/
 void tiro_desenhaTiro(Tiro *tiro){
-    // Começa a usar a cor vermelha
-    glColor3f(1, .5, .5);
+    // Começa a usar a cor branca
+    glColor3f(1, 1, 1);
 
+    glEnable(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     // Desenha o tiro
+    glBindTexture(GL_TEXTURE_2D, tiro->textura);
     glBegin(GL_TRIANGLE_FAN);
-        glVertex2f(-(tiro->dimensoes.width/2), -(tiro->dimensoes.height/2));
-        glVertex2f(-(tiro->dimensoes.width/2),  (tiro->dimensoes.height/2));
-        glVertex2f((tiro->dimensoes.width/2),  (tiro->dimensoes.height/2));
-        glVertex2f((tiro->dimensoes.width/2),  -(tiro->dimensoes.height/2));
+        glTexCoord2f(0, 0); glVertex2f(-(tiro->dimensoes.width/2), -(tiro->dimensoes.height/2));
+        glTexCoord2f(0, 1); glVertex2f(-(tiro->dimensoes.width/2),  (tiro->dimensoes.height/2));
+        glTexCoord2f(1, 1); glVertex2f((tiro->dimensoes.width/2),  (tiro->dimensoes.height/2));
+        glTexCoord2f(1, 0); glVertex2f((tiro->dimensoes.width/2),  -(tiro->dimensoes.height/2));
     glEnd();
+    glDisable(GL_TEXTURE_2D);
 }
 
 /** Tiro - Atualizar posicao
