@@ -37,8 +37,10 @@ Menu menuGameOver;
 Barra barraTiro;
 
 // Informativos
+FILE *registraPontuacaoMaxima;
 int pontuacaoUsuario = 0;
-int pontuacaoMaxima = 0;
+int pontuacaoMaxima;
+
 
 #define radianoParaGraus(radianos) (radianos * (180.0 / M_PI))
 #define grausParaRadianos(graus) ((graus * M_PI) / 180.0)
@@ -140,6 +142,17 @@ void desenhaCena(void)
 // Inicia algumas variáveis de estado
 void inicializa(void)
 {
+    //abre o arquivo Pontuação máxima
+    registraPontuacaoMaxima = fopen("highscore.ctp","r");
+    if (registraPontuacaoMaxima == NULL) pontuacaoMaxima=0; //se o arquivo não existir, salva a pontuação como 0
+    else{
+        while(fscanf(registraPontuacaoMaxima,"%d",&pontuacaoMaxima)){
+            printf("%d\n",pontuacaoMaxima);
+            registraPontuacaoMaxima++;
+        }
+    }
+    fclose(registraPontuacaoMaxima); //fecha o arquivo
+
     int i;
     for(i=0;i<256;i++) keyState[i]=0;
     mapa = mapa_criaMapa();
@@ -158,7 +171,7 @@ void inicializa(void)
     Vetor _posicaoMenus;
     _posicaoMenus.x = 0;
     _posicaoMenus.y = 0;
-    
+
     char *_tituloMenuPause = strdup("Pause");
     char *_tituloMenuGameOver = strdup("Game Over");
 
@@ -169,7 +182,7 @@ void inicializa(void)
     char *_opcaoReiniciar = strdup("Reiniciar");
     char *_opcaoControle = strdup("Mouse: Sim");
     char *_opcaoSair = strdup("Sair");
-    
+
     _opcoesMenuPause = opcao_adicionaOpcao(_opcoesMenuPause, _opcaoRetomar);
     _opcoesMenuPause = opcao_adicionaOpcao(_opcoesMenuPause, _opcaoReiniciar);
     _opcoesMenuPause = opcao_adicionaOpcao(_opcoesMenuPause, _opcaoControle);
@@ -295,7 +308,12 @@ void atualizaJogo(){
                 asteroides = listaasteroide_deletaAsteroide(asteroides, &(_asteroides->asteroide));
                 tiros = listatiro_deletaTiro(tiros, &(_tiros->tiro));
                 pontuacaoUsuario++;
-                if(pontuacaoUsuario > pontuacaoMaxima) pontuacaoMaxima=pontuacaoUsuario;
+                if(pontuacaoUsuario > pontuacaoMaxima){
+                    pontuacaoMaxima=pontuacaoUsuario;
+                    registraPontuacaoMaxima = fopen("highscore.ctp","w");
+                    fprintf(registraPontuacaoMaxima, "%d\n", pontuacaoMaxima);
+                    fclose(registraPontuacaoMaxima);
+                }
             }
             _tiros = _tiros->proximo;
         }
