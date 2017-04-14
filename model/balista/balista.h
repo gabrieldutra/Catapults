@@ -6,6 +6,8 @@ typedef struct balista{
     Dimensoes dimensoes;
     double inclinacao;
     int podeAtirar;
+    int textura[3];
+    int atualTextura;
 } Balista;
 
 Balista balista_criaBalista();

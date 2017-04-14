@@ -64,7 +64,7 @@ int asteroide_checaColisaoComBalista(Asteroide asteroide, Balista balista){
     Vetor _distancia;
     _distancia.x=asteroide.posicao.x-balista.posicao.x;
     _distancia.y=asteroide.posicao.y-balista.posicao.y;
-    return (vetor_calculaModulo(_distancia)<=asteroide.dimensoes.width+balista.dimensoes.height);
+    return (vetor_calculaModulo(_distancia)<=asteroide.dimensoes.width+(balista.dimensoes.height/2));
 }
 
 /** Lista Asteroide - Adicionar um asteroide na lista

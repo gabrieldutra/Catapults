@@ -251,6 +251,10 @@ void atualizaJogo(){
     if(balista.podeAtirar < BALISTA_TEMPO_RECARGA) balista.podeAtirar++;
     barraTiro.valor = (float) (balista.podeAtirar*100)/BALISTA_TEMPO_RECARGA;
 
+    // Textura da Balista
+    if(balista.podeAtirar == BALISTA_TEMPO_RECARGA) balista.atualTextura = 0;
+    else balista.atualTextura = 1;
+
     // Movimento dos tiros
 
     ListaTiro *_tiros = tiros;
