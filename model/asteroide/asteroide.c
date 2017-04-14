@@ -52,7 +52,7 @@ int asteroide_checaColisaoComTiro(Asteroide asteroide, Tiro tiro){
     Vetor _distancia;
     _distancia.x=asteroide.posicao.x-tiro.posicao.x;
     _distancia.y=asteroide.posicao.y-tiro.posicao.y;
-    return (vetor_calculaModulo(_distancia)<=asteroide.dimensoes.width);
+    return (vetor_calculaModulo(_distancia)<=asteroide.dimensoes.width+tiro.dimensoes.height);
 }
 
 /** Asteroide - Checa colisão do asteróide com a balista
