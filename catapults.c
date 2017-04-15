@@ -26,7 +26,7 @@ int jogoRodando = 1;
 int keyState[256];
 int numeroAsteroides = NUMERO_ASTEROIDES_BASE;
 
-int texturaTiro;
+int texturaTiro, texturaAsteroide;
 
 // Objetos
 Mapa mapa;
@@ -208,6 +208,15 @@ void inicializa(void)
 
     if(texturaTiro == 0) printf("Erro do SOIL: '%s'\n", SOIL_last_result());
 
+    texturaAsteroide = SOIL_load_OGL_texture(
+        "textures/rock.png",
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+		SOIL_FLAG_INVERT_Y
+    );
+
+    if(texturaAsteroide == 0) printf("Erro do SOIL: '%s'\n", SOIL_last_result());
+
     // cor para limpar a tela
     glClearColor(0, 0, 0, 0);      // preto
 }
@@ -309,7 +318,7 @@ void atualizaJogo(){
         _dimensoesAsteroide.width=ASTEROIDE_TAMANHO_MAXIMO;
         _dimensoesAsteroide.height=ASTEROIDE_TAMANHO_MAXIMO;
 
-        Asteroide _novoAsteroide = asteroide_criaAsteroide(_posicaoAsteroide, _velocidadeAsteroide, _dimensoesAsteroide, _anguloAsteroide);
+        Asteroide _novoAsteroide = asteroide_criaAsteroide(_posicaoAsteroide, _velocidadeAsteroide, _dimensoesAsteroide, _anguloAsteroide, &texturaAsteroide);
         asteroides = listaasteroide_adicionaAsteroide(asteroides, _novoAsteroide);
     }
 
@@ -338,7 +347,7 @@ void atualizaJogo(){
                     double _anguloAsteroide = rand()%360; // O ângulo do asteróide é de 0 a 360
 
                     //Cria o asteróide e o adiciona a lista
-                    Asteroide _novoAsteroide = asteroide_criaAsteroide(_asteroides->asteroide.posicao, _asteroides->asteroide.velocidade+rand()%3, _dimensaoAtual, _anguloAsteroide);
+                    Asteroide _novoAsteroide = asteroide_criaAsteroide(_asteroides->asteroide.posicao, _asteroides->asteroide.velocidade+rand()%3, _dimensaoAtual, _anguloAsteroide, &texturaAsteroide);
                     asteroides = listaasteroide_adicionaAsteroide(asteroides,_novoAsteroide);
                 }
 
@@ -355,7 +364,7 @@ void atualizaJogo(){
     // Verificação de colisões asteróide com balista
     _asteroides = asteroides;
     while(_asteroides != NULL){
-        if(asteroide_checaColisaoComBalista(_asteroides->asteroide, balista)){            
+        if(asteroide_checaColisaoComBalista(_asteroides->asteroide, balista)){
             if(pontuacaoUsuario > pontuacaoMaxima){
                 pontuacaoMaxima=pontuacaoUsuario;
                 registraPontuacaoMaxima = fopen("highscore.ctp","w");

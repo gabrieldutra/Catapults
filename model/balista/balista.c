@@ -57,7 +57,7 @@ void balista_desenhaBalista(Balista *balista){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     // Desenha o tiro
     glBindTexture(GL_TEXTURE_2D, balista->textura[balista->atualTextura]);
-    
+
     float valorSprite = (float) ((int) abs(balista->posicao.x+balista->posicao.y)%2)/2;
     glRotatef(-90, 0, 0, 1);
     glBegin(GL_TRIANGLE_FAN);

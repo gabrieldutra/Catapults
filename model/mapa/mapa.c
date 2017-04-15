@@ -30,8 +30,8 @@ Mapa mapa_criaMapa(){
 * @param Mapa a ser desenhado
 **/
 void mapa_desenhaMapa(Mapa *mapa){
-    // Começa a usar a cor branca
-    glColor3f(1, 1, 1);
+    // Começa a usar a cor verde
+    glColor3f(0, 1, 0.3);
     glEnable(GL_TEXTURE_2D);
 
     // WRAP para resolver linhas pretas entre as texturas

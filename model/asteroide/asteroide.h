@@ -8,6 +8,7 @@ typedef struct asteroide{
     double velocidade; // O módulo da velocidade, ela sempre fará vetor com a inclinação
     Dimensoes dimensoes;
     double inclinacao;
+    int textura;
 } Asteroide;
 
 typedef struct listaAsteroide{
@@ -15,7 +16,7 @@ typedef struct listaAsteroide{
     struct listaAsteroide *proximo;
 } ListaAsteroide;
 
-Asteroide asteroide_criaAsteroide(Vetor posicao, double velocidade, Dimensoes dimensoes, double inclinacao);
+Asteroide asteroide_criaAsteroide(Vetor posicao, double velocidade, Dimensoes dimensoes, double inclinacao, int *textura);
 void asteroide_desenhaAsteroide(Asteroide *asteroide);
 int asteroide_checaColisaoComTiro(Asteroide asteroide, Tiro tiro);
 int asteroide_checaColisaoComBalista(Asteroide asteroide, Balista balista);

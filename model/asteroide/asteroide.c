@@ -15,13 +15,15 @@
 * @param inclinacao a inclinação do asteroide
 * @return Asteroide com as variáveis criadas
 **/
-Asteroide asteroide_criaAsteroide(Vetor posicao, double velocidade, Dimensoes dimensoes, double inclinacao){
+Asteroide asteroide_criaAsteroide(Vetor posicao, double velocidade, Dimensoes dimensoes, double inclinacao, int *textura){
     Asteroide _novoAsteroide;
 
     _novoAsteroide.posicao = posicao;
     _novoAsteroide.dimensoes = dimensoes;
     _novoAsteroide.velocidade = velocidade;
     _novoAsteroide.inclinacao = inclinacao;
+    _novoAsteroide.textura = *textura;
+
 
     return _novoAsteroide;
 }
@@ -31,14 +33,29 @@ Asteroide asteroide_criaAsteroide(Vetor posicao, double velocidade, Dimensoes di
 **/
 void asteroide_desenhaAsteroide(Asteroide *asteroide){
     int i;
-    // Começa a usar a cor cinza
-    glColor3f(1, 0, 0);
+    // Começa a usar a cor branca
+    glColor3f(1, 1, 1);
 
-    // Desenha um triângulo
+    glEnable(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+
+
+    // Desenha um polígono
+    glBindTexture(GL_TEXTURE_2D, asteroide->textura);
     glBegin(GL_TRIANGLE_FAN);
+        glTexCoord2f(0, 0); glVertex2f(-(asteroide->dimensoes.width), -(asteroide->dimensoes.height));
+        glTexCoord2f(0, 1); glVertex2f(-(asteroide->dimensoes.width),  (asteroide->dimensoes.height));
+        glTexCoord2f(1, 1); glVertex2f((asteroide->dimensoes.width),  (asteroide->dimensoes.height));
+        glTexCoord2f(1, 0); glVertex2f((asteroide->dimensoes.width),  -(asteroide->dimensoes.height));
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+        /*
         for(i=0;i<ASTEROIDE_NUMLADOS;i++){
             glVertex3f(asteroide->dimensoes.width*cos(i*2*M_PI/ASTEROIDE_NUMLADOS), asteroide->dimensoes.height*sin(i*2*M_PI/ASTEROIDE_NUMLADOS), 0);
         }
+        */
 
     glEnd();
 }
