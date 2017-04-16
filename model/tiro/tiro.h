@@ -1,3 +1,6 @@
+#define TIRO_VELOCIDADE_MAXIMA 15
+#define TIRO_VELOCIDADE_MINIMA 8
+
 typedef struct tiro{
     Vetor posicao;
     double velocidade; // O módulo da velocidade, ela sempre fará vetor com a inclinação

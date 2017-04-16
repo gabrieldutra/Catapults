@@ -25,6 +25,7 @@ int controleDoJogo = MOUSE_CONTROL;
 int jogoRodando = 1;
 int keyState[256];
 int numeroAsteroides = NUMERO_ASTEROIDES_BASE;
+double velocidadeTiro = TIRO_VELOCIDADE_MINIMA;
 
 int texturaTiro, texturaAsteroide;
 
@@ -38,6 +39,7 @@ Menu menuGameOver;
 
 // Barras do HUD
 Barra barraTiro;
+Barra barraPoderTiro;
 
 // Informativos
 FILE *registraPontuacaoMaxima;
@@ -105,7 +107,12 @@ void desenhaCena(void)
         glRotatef(balista.inclinacao, 0, 0, 1);
         // Desenha a Balista na origem
         balista_desenhaBalista(&balista);
-        glEnd();
+    glPopMatrix();
+
+    glPushMatrix();
+        // Desenha a barra de poder do tiro
+        glTranslatef(barraPoderTiro.posicao.x, barraPoderTiro.posicao.y, 0);
+        if(keyState[' ']) barra_desenhaBarra(&barraPoderTiro);
     glPopMatrix();
 
     // HUD
@@ -172,6 +179,16 @@ void inicializa(void)
 
     barraTiro = barra_criaBarra(_posicaoBarraTiro, _dimensoesBarraTiro, 100, 1, .5, 0);
 
+    Vetor _posicaoBarraPoderTiro;
+    _posicaoBarraPoderTiro.x = 0;
+    _posicaoBarraPoderTiro.y = -40;
+
+    Dimensoes _dimensoesBarraPoderTiro;
+    _dimensoesBarraPoderTiro.width = 40;
+    _dimensoesBarraPoderTiro.height = 10;
+
+    barraPoderTiro = barra_criaBarra(_posicaoBarraPoderTiro, _dimensoesBarraPoderTiro, 100, 1, 0, 0);
+
     Vetor _posicaoMenus;
     _posicaoMenus.x = 0;
     _posicaoMenus.y = 0;
@@ -235,16 +252,26 @@ void redimensiona(int w, int h)
 }
 
 void atualizaJogo(){
+    int _balistaAtirando = (keyState[' '] && balista.podeAtirar == BALISTA_TEMPO_RECARGA);
     // Verificações de teclas
-    if((keyState['w']||keyState['W']) && balista.velocidade < 5) balista.velocidade+=0.2;
+    if((keyState['w']||keyState['W']) && !_balistaAtirando && balista.velocidade < 5) balista.velocidade+=0.2;
 
-    if((keyState['s']||keyState['S']) && balista.velocidade < 5) {
+    if((keyState['s']||keyState['S'] || _balistaAtirando) && balista.velocidade < 5) {
         if(balista.velocidade > 0) balista.velocidade -= 0.2;
     }
 
     if((keyState['a']||keyState['A']) && controleDoJogo == KEYBOARD_CONTROL) balista.inclinacao+=5;
 
     if((keyState['d']||keyState['D']) && controleDoJogo == KEYBOARD_CONTROL) balista.inclinacao-=5;
+
+    if(_balistaAtirando){
+        if(velocidadeTiro < TIRO_VELOCIDADE_MAXIMA){
+
+            velocidadeTiro+=0.25;
+            double _valorBarraPoderTiro = 100*(float) (velocidadeTiro-TIRO_VELOCIDADE_MINIMA)/(TIRO_VELOCIDADE_MAXIMA-TIRO_VELOCIDADE_MINIMA);
+            barraPoderTiro.valor = _valorBarraPoderTiro;
+        }
+    }
 
 
     // O ângulo esperado pelas funções "cos" e "sin" da math.h devem
@@ -261,6 +288,8 @@ void atualizaJogo(){
     barraTiro.valor = (float) (balista.podeAtirar*100)/BALISTA_TEMPO_RECARGA;
 
     // Textura da Balista
+    if(_balistaAtirando) balista.atualTextura = 2;
+    else
     if(balista.podeAtirar == BALISTA_TEMPO_RECARGA) balista.atualTextura = 0;
     else balista.atualTextura = 1;
 
@@ -426,7 +455,6 @@ void tecladoEspecial(int key, int x, int y){
 void teclado(unsigned char key, int x, int y)
 {
     keyState[key] = 1;
-    Tiro _novoTiro;
     switch(key)
     {
         case 'w':
@@ -447,13 +475,6 @@ void teclado(unsigned char key, int x, int y)
             } else {
                 menuPause.estaAberto = 1;
                 jogoRodando = 0;
-            }
-            break;
-        case ' ':
-            if(balista.podeAtirar == BALISTA_TEMPO_RECARGA){
-                _novoTiro = tiro_criaTiro(balista.posicao, 10, balista.inclinacao, &texturaTiro);
-                tiros = listatiro_adicionaTiro(tiros, _novoTiro);
-                balista.podeAtirar = 0;
             }
             break;
         // Tecla ENTER
@@ -528,6 +549,16 @@ void teclado(unsigned char key, int x, int y)
 // Callback de evento de teclado liberado
 void tecladoUp(unsigned char key, int x, int y)
 {
+    Tiro _novoTiro;
+    if(key == ' ' && keyState[' ']){
+        if(balista.podeAtirar == BALISTA_TEMPO_RECARGA){
+            _novoTiro = tiro_criaTiro(balista.posicao, velocidadeTiro, balista.inclinacao, &texturaTiro);
+            tiros = listatiro_adicionaTiro(tiros, _novoTiro);
+            balista.podeAtirar = 0;
+            velocidadeTiro = TIRO_VELOCIDADE_MINIMA;
+        }
+    }
+
     keyState[key] = 0;
 }
 // Rotina principal
@@ -543,6 +574,8 @@ int main(int argc, char **argv)
 
     // Abre a janela
     glutCreateWindow("Catapults - Medieval war where you actually control a Ballista");
+
+    glutIgnoreKeyRepeat(1);
 
     // Registra callbacks para alguns eventos
     glutDisplayFunc(desenhaCena);
