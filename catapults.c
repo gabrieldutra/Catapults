@@ -53,6 +53,7 @@ int pontuacaoMaxima;
 Mix_Chunk *somBackground = NULL;
 Mix_Chunk *somTiro = NULL;
 Mix_Chunk *somAsteroideDestruido = NULL;
+Mix_Chunk *somGameOver = NULL;
 
 
 #define radianoParaGraus(radianos) (radianos * (180.0 / M_PI))
@@ -264,6 +265,11 @@ void inicializa(void)
     if( somAsteroideDestruido == NULL ){
         printf( "Failed to load medium sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
     }
+    somGameOver = Mix_LoadWAV( "soundfx/somGameOver.wav" );
+    if( somGameOver == NULL ){
+        printf( "Failed to load medium sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+    }
+
     Mix_PlayChannel( -1, somBackground, 0 );
 
 
@@ -412,11 +418,11 @@ void atualizaJogo(){
                     Asteroide _novoAsteroide = asteroide_criaAsteroide(_asteroides->asteroide.posicao, _asteroides->asteroide.velocidade+rand()%3, _dimensaoAtual, _anguloAsteroide, &texturaAsteroide);
                     asteroides = listaasteroide_adicionaAsteroide(asteroides,_novoAsteroide);
                 }
-                Mix_PlayChannel( -1, somAsteroideDestruido, 0 );
                 asteroides = listaasteroide_deletaAsteroide(asteroides, &(_asteroides->asteroide));
                 tiros = listatiro_deletaTiro(tiros, &(_tiros->tiro));
                 pontuacaoUsuario++;
                 numeroAsteroides = NUMERO_ASTEROIDES_BASE + pontuacaoUsuario;
+                Mix_PlayChannel( -1, somAsteroideDestruido, 0 );
             }
             _tiros = _tiros->proximo;
         }
@@ -439,6 +445,7 @@ void atualizaJogo(){
             sprintf(_tituloMenuGameOver, "Highscore: %d", pontuacaoMaxima);
             menuGameOver.titulo = strdup(_tituloMenuGameOver);
             menuGameOver.estaAberto = 1;
+            Mix_PlayChannel( -1, somGameOver, 0 );
         }
         _asteroides = _asteroides->proximo;
     }
