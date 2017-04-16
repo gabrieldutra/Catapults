@@ -1,6 +1,9 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <SOIL/SOIL.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+#include <SDL/SDL_mixer.h>
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
@@ -45,6 +48,11 @@ Barra barraPoderTiro;
 FILE *registraPontuacaoMaxima;
 int pontuacaoUsuario = 0;
 int pontuacaoMaxima;
+
+// Variáveis de som
+Mix_Chunk *somBackground = NULL;
+Mix_Chunk *somTiro = NULL;
+Mix_Chunk *somAsteroideDestruido = NULL;
 
 
 #define radianoParaGraus(radianos) (radianos * (180.0 / M_PI))
@@ -235,6 +243,30 @@ void inicializa(void)
 
     if(texturaAsteroide == 0) printf("Erro do SOIL: '%s'\n", SOIL_last_result());
 
+    // Implementação do som
+    if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 ){
+        printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
+    }
+
+    //Initialize SDL_mixer
+    if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 ){
+        printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+    }
+    somBackground = Mix_LoadWAV( "soundfx/somBackground.wav" );
+    if( somBackground == NULL ){
+        printf( "Failed to load medium sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+    }
+    somTiro = Mix_LoadWAV( "soundfx/somTiro.wav" );
+    if( somTiro == NULL ){
+        printf( "Failed to load medium sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+    }
+    somAsteroideDestruido = Mix_LoadWAV( "soundfx/somAsteroideDestruido.wav" );
+    if( somAsteroideDestruido == NULL ){
+        printf( "Failed to load medium sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+    }
+    Mix_PlayChannel( -1, somBackground, 0 );
+
+
     // cor para limpar a tela
     glClearColor(0, 0, 0, 0);      // preto
 }
@@ -380,7 +412,7 @@ void atualizaJogo(){
                     Asteroide _novoAsteroide = asteroide_criaAsteroide(_asteroides->asteroide.posicao, _asteroides->asteroide.velocidade+rand()%3, _dimensaoAtual, _anguloAsteroide, &texturaAsteroide);
                     asteroides = listaasteroide_adicionaAsteroide(asteroides,_novoAsteroide);
                 }
-
+                Mix_PlayChannel( -1, somAsteroideDestruido, 0 );
                 asteroides = listaasteroide_deletaAsteroide(asteroides, &(_asteroides->asteroide));
                 tiros = listatiro_deletaTiro(tiros, &(_tiros->tiro));
                 pontuacaoUsuario++;
@@ -553,6 +585,7 @@ void tecladoUp(unsigned char key, int x, int y)
     Tiro _novoTiro;
     if(key == ' ' && keyState[' ']){
         if(balista.podeAtirar == BALISTA_TEMPO_RECARGA){
+            Mix_PlayChannel( -1, somTiro, 0 );
             _novoTiro = tiro_criaTiro(balista.posicao, velocidadeTiro, balista.inclinacao, &texturaTiro);
             tiros = listatiro_adicionaTiro(tiros, _novoTiro);
             balista.podeAtirar = 0;
