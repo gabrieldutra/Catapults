@@ -96,7 +96,8 @@ void desenhaCena(void)
         while(_asteroides != NULL){
             glPushMatrix();
                 glTranslatef(_asteroides->asteroide.posicao.x, _asteroides->asteroide.posicao.y, 0);
-                glRotatef(_asteroides->asteroide.inclinacao, 0, 0, 1);
+                int _rotacaoAsteroideExtra = (int)(_asteroides->asteroide.posicao.x+_asteroides->asteroide.posicao.y)%360;
+                glRotatef(_asteroides->asteroide.inclinacao+_rotacaoAsteroideExtra, 0, 0, 1);
                 asteroide_desenhaAsteroide(&(_asteroides->asteroide));
             glPopMatrix();
             _asteroides = _asteroides->proximo;
