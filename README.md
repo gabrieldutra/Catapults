@@ -15,6 +15,7 @@ Extras Implementados:
 - Controle via mouse;
 - Asteróides girando no próprio eixo;
 - Highscore em arquivo;
+- Manter Aspecto ao redimensionar;
 
 Implementação Criativa:
 - Força de tiro da balista;
