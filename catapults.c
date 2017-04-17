@@ -16,8 +16,8 @@
 #include "model/barra/barra.h"
 #include "model/menu/menu.h"
 
-int windowWidth = 800;
-int windowHeight = 600;
+int windowWidth = 1280;
+int windowHeight = 720;
 
 #define KEYBOARD_CONTROL 1
 #define MOUSE_CONTROL 0
@@ -67,10 +67,10 @@ void desenhaInicio(){
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, telaInicial);
     glBegin(GL_TRIANGLE_FAN);
-        glTexCoord2f(0, 0); glVertex2f(-(mapa.dimensoes.width/1.3), -(mapa.dimensoes.height/2));
-        glTexCoord2f(1, 0); glVertex2f((mapa.dimensoes.width/1.3),  -(mapa.dimensoes.height/2));
-        glTexCoord2f(1, 1); glVertex2f((mapa.dimensoes.width/1.3),  (mapa.dimensoes.height/2));
-        glTexCoord2f(0, 1); glVertex2f(-(mapa.dimensoes.width/1.3), (mapa.dimensoes.height/2));
+        glTexCoord2f(0, 0); glVertex2f(-(windowWidth/2), -(windowHeight/2));
+        glTexCoord2f(1, 0); glVertex2f((windowWidth/2),  -(windowHeight/2));
+        glTexCoord2f(1, 1); glVertex2f((windowWidth/2),  (windowHeight/2));
+        glTexCoord2f(0, 1); glVertex2f(-(windowWidth/2), (windowHeight/2));
     glEnd();
     glDisable(GL_TEXTURE_2D);
 }
