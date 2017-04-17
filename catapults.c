@@ -52,7 +52,7 @@ int pontuacaoUsuario = 0;
 int pontuacaoMaxima;
 
 // Variáveis de som
-Mix_Chunk *somBackground = NULL;
+Mix_Music *somBackground = NULL;
 Mix_Chunk *somTiro = NULL;
 Mix_Chunk *somAsteroideDestruido = NULL;
 Mix_Chunk *somGameOver = NULL;
@@ -281,7 +281,7 @@ void inicializa(void)
     if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 ){
         printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
     }
-    somBackground = Mix_LoadWAV( "soundfx/somBackground.wav" );
+    somBackground = Mix_LoadMUS( "soundfx/somBackground.wav" );
     if( somBackground == NULL ){
         printf( "Failed to load medium sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
     }
@@ -298,7 +298,7 @@ void inicializa(void)
         printf( "Failed to load medium sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
     }
 
-    Mix_PlayChannel( -1, somBackground, 0 );
+    Mix_PlayMusic( somBackground, -1 );
 
 
     // cor para limpar a tela
@@ -636,7 +636,7 @@ void teclado(unsigned char key, int x, int y)
 void tecladoUp(unsigned char key, int x, int y)
 {
     Tiro _novoTiro;
-    if(key == ' ' && keyState[' ']){
+    if(key == ' ' && keyState[' '] && jogoRodando){
         if(balista.podeAtirar == BALISTA_TEMPO_RECARGA){
             Mix_PlayChannel( -1, somTiro, 0 );
             _novoTiro = tiro_criaTiro(balista.posicao, velocidadeTiro, balista.inclinacao, &texturaTiro);
