@@ -5,6 +5,7 @@ Versão medieval do jogo _Asteroids_, [TP1](https://github.com/fegemo/cefet-cg/b
 [Vídeo demonstrativo](https://youtu.be/wbByFII9Vr0)
 ### Desenvolvimento
 Desenvolvido usando OpenGL e linguagem C.
+
 Extras Implementados:
 - Mapa Infinito;
 - Textura animada;
@@ -14,6 +15,7 @@ Extras Implementados:
 - Controle via mouse;
 - Asteróides girando no próprio eixo;
 - Highscore em arquivo;
+
 Implementação Criativa:
 - Força de tiro da balista;
 - Tempo de recarga do tiro;
