@@ -25,7 +25,9 @@ int windowHeight = 600;
 #define NUMERO_ASTEROIDES_BASE 15
 
 int controleDoJogo = MOUSE_CONTROL;
-int jogoRodando = 1;
+int jogoRodando = 0;
+int jogoRecemAberto = 1;
+int telaInicial;
 int keyState[256];
 int numeroAsteroides = NUMERO_ASTEROIDES_BASE;
 double velocidadeTiro = TIRO_VELOCIDADE_MINIMA;
@@ -58,6 +60,20 @@ Mix_Chunk *somGameOver = NULL;
 
 #define radianoParaGraus(radianos) (radianos * (180.0 / M_PI))
 #define grausParaRadianos(graus) ((graus * M_PI) / 180.0)
+
+void desenhaInicio(){
+    // Começa a usar a cor branca
+    glColor3f(1, 1, 1);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, telaInicial);
+    glBegin(GL_TRIANGLE_FAN);
+        glTexCoord2f(0, 0); glVertex2f(-(mapa.dimensoes.width/1.3), -(mapa.dimensoes.height/2));
+        glTexCoord2f(1, 0); glVertex2f((mapa.dimensoes.width/1.3),  -(mapa.dimensoes.height/2));
+        glTexCoord2f(1, 1); glVertex2f((mapa.dimensoes.width/1.3),  (mapa.dimensoes.height/2));
+        glTexCoord2f(0, 1); glVertex2f(-(mapa.dimensoes.width/1.3), (mapa.dimensoes.height/2));
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+}
 
 void desenhaCena(void)
 {
@@ -158,6 +174,12 @@ void desenhaCena(void)
         glPopMatrix();
     }
 
+    if(jogoRecemAberto){
+        glPushMatrix();
+            desenhaInicio();
+        glPopMatrix();
+    }
+
     // Diz ao OpenGL para colocar o que desenhamos na tela
     glutSwapBuffers();
 }
@@ -165,6 +187,12 @@ void desenhaCena(void)
 // Inicia algumas variáveis de estado
 void inicializa(void)
 {
+    telaInicial = SOIL_load_OGL_texture(
+        "textures/telaInicial.png",
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_INVERT_Y
+    );
     //abre o arquivo Pontuação máxima
     registraPontuacaoMaxima = fopen("highscore.ctp","r");
     if (registraPontuacaoMaxima == NULL) pontuacaoMaxima=0; //se o arquivo não existir, salva a pontuação como 0
@@ -509,7 +537,7 @@ void teclado(unsigned char key, int x, int y)
             break;
         // Tecla ESC
         case 27:
-            if(!menuGameOver.estaAberto) if(menuPause.estaAberto){
+            if(!menuGameOver.estaAberto && !jogoRecemAberto) if(menuPause.estaAberto){
                 menuPause.estaAberto = 0;
                 jogoRodando = 1;
             } else {
@@ -519,6 +547,24 @@ void teclado(unsigned char key, int x, int y)
             break;
         // Tecla ENTER
         case 13:
+            if(jogoRecemAberto){
+                balista.posicao.x = 0;
+                balista.posicao.y = 0;
+                balista.inclinacao = 0;
+                balista.velocidade = 0;
+                balista.podeAtirar = BALISTA_TEMPO_RECARGA;
+                ListaAsteroide *_asteroides = asteroides;
+                // Deleta todos os asteróides
+                while(_asteroides != NULL){
+                    asteroides = listaasteroide_deletaAsteroide(asteroides, &_asteroides->asteroide);
+                    _asteroides = _asteroides->proximo;
+                }
+                menuGameOver.estaAberto = 0;
+                menuPause.estaAberto = 0;
+                pontuacaoUsuario = 0;
+                jogoRodando = 1;
+                jogoRecemAberto=0;
+            }
             if(menuGameOver.estaAberto){
                 if(menuGameOver.opcaoAtual == 0){ // Retomar
                     balista.posicao.x = 0;
@@ -602,6 +648,7 @@ void tecladoUp(unsigned char key, int x, int y)
 
     keyState[key] = 0;
 }
+
 // Rotina principal
 int main(int argc, char **argv)
 {
