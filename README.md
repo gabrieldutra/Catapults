@@ -23,7 +23,8 @@ Implementação Criativa:
 ## Comandos
 - `make` - Compila e gera o executável;
 - `make run` - Compila, gera o executável e o executa;
-- `make clean` - Apaga todos os arquivos compilados e executável.
+- `make clean` - Apaga todos os arquivos compilados e executável;
+- `make packages` - Instala todas as bibliotecas necessárias para compilar e executar o jogo.
 
 ## Licença
 Este código possui a licença [Beer-ware License](https://github.com/gabrieldutra/Catapults/blob/master/LICENSE.md).
